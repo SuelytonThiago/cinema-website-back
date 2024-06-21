@@ -1,7 +1,10 @@
 package com.example.project.domain.entities;
 
+import com.example.project.rest.dto.ReviewRequestDto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,7 +23,9 @@ public class Reviews {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String comment;
-    private Double rating;
+    @Min(1)
+    @Max(5)
+    private Integer rating;
     private LocalDate date;
 
     @ManyToOne
@@ -30,7 +35,17 @@ public class Reviews {
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "movieId")
-    private Movies movieId;
+    private Movies movie;
+
+    public static Reviews of(ReviewRequestDto dto,Users user, Movies movie){
+        var reviews = new Reviews();
+        reviews.setComment(dto.getComment());
+        reviews.setDate(LocalDate.now());
+        reviews.setRating(dto.getRating());
+        reviews.setUser(user);
+        reviews.setMovie(movie);
+        return reviews;
+    }
 
     @Override
     public boolean equals(Object o) {

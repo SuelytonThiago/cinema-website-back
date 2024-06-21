@@ -1,6 +1,7 @@
 package com.example.project.rest.controllers.exceptions;
 
 import com.example.project.rest.services.exceptions.AlreadyExistsExceptions;
+import com.example.project.rest.services.exceptions.CustomException;
 import com.example.project.rest.services.exceptions.ObjectNotFoundExceptions;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,14 @@ public class ExceptionHandlerController {
     public ProblemDetail objectNotFound(ObjectNotFoundExceptions e){
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
         problemDetail.setProperty("TimeStamp", LocalDate.now());
+        problemDetail.setProperty("Message",e.getMessage());
+        return problemDetail;
+    }
+
+    @ExceptionHandler(CustomException.class)
+    public ProblemDetail custom(CustomException e){
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+        problemDetail.setProperty("TimeStamp",LocalDate.now());
         problemDetail.setProperty("Message",e.getMessage());
         return problemDetail;
     }

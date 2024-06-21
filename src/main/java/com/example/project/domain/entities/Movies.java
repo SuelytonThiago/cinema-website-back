@@ -30,7 +30,7 @@ public class Movies {
     private String description;
     private LocalDate releaseData;
 
-    @OneToMany(mappedBy = "movieId")
+    @OneToMany(mappedBy = "movie")
     private List<Reviews> reviews = new ArrayList<>();
 
     public static Movies of(MovieRequestDto dto){
