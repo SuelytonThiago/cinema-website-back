@@ -26,9 +26,8 @@ public class Users {
     private String contactNumber;
     private String password;
 
-    @JsonIgnore
     @OneToMany(mappedBy = "user")
-    private List<Reserves> reserves = new ArrayList<>();
+    private List<Tickets> tickets = new ArrayList<>();
 
     public static Users of(UserRequestDto dto){
         Users user = new Users();
