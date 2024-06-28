@@ -5,8 +5,10 @@ import com.example.project.domain.repositories.UsersRepository;
 import com.example.project.rest.dto.UserRequestDto;
 import com.example.project.rest.services.exceptions.AlreadyExistsExceptions;
 import com.example.project.rest.services.exceptions.ObjectNotFoundExceptions;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,6 +16,9 @@ import org.springframework.stereotype.Service;
 public class UsersService {
 
     private final UsersRepository usersRepository;
+    private final JwtService jwtService;
+    private final PasswordEncoder encoder;
+    private final RoleService roleService;
 
     public void findFirstUserByEmailOrCpf(String email,String cpf){
         usersRepository.findFirstByEmailOrCpf(email,cpf).ifPresent( e -> {
@@ -21,10 +26,12 @@ public class UsersService {
         });
     }
 
+    @Transactional
     public void createNewUser(UserRequestDto userDto){
         findFirstUserByEmailOrCpf(userDto.getEmail(),userDto.getCpf());
         var user = Users.of(userDto);
-
+        user.setPassword(encoder.encode(user.getPassword()));
+        user.getRoles().add(roleService.findByName("ROLE_USER"));
         usersRepository.save(user);
     }
 
@@ -42,8 +49,9 @@ public class UsersService {
 
 
     @Transactional
-    public void updateUserData(UserRequestDto dto, Long id){
-        var user = findById(id);
+    public void updateUserData(UserRequestDto dto, HttpServletRequest request){
+        var userId = jwtService.getClaimId(request);
+        var user = findById(userId);
         verifyCpfAndEmailAlreadyInUse(user, dto.getEmail(), dto.getCpf());
         updateData(dto,user);
         usersRepository.save(user);
@@ -62,7 +70,7 @@ public class UsersService {
         newUser.setContactNumber(dto.getContactNumber());
         newUser.setEmail(dto.getEmail());
         newUser.setCpf(dto.getCpf());
-        newUser.setPassword(dto.getPassword());
+        newUser.setPassword(encoder.encode(dto.getPassword()));
     }
 
 

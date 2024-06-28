@@ -3,6 +3,7 @@ package com.example.project.rest.controllers;
 import com.example.project.rest.dto.TicketRequestDto;
 import com.example.project.rest.dto.TicketsResponseDto;
 import com.example.project.rest.services.TicketService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,17 +20,17 @@ public class TicketController {
     private TicketService ticketService;
 
     @PostMapping("/purchase")
-    public ResponseEntity<Void> purchaseTicket(@RequestBody @Valid TicketRequestDto dto){
-        ticketService.createTicket(dto);
+    public ResponseEntity<Void> purchaseTicket(@RequestBody @Valid TicketRequestDto dto, HttpServletRequest request){
+        ticketService.createTicket(dto,request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<List<TicketsResponseDto>> getTickets(@PathVariable Long id){
-        return ResponseEntity.ok(ticketService.getTickets(id));
+    @GetMapping
+    public ResponseEntity<List<TicketsResponseDto>> getTickets(HttpServletRequest request){
+        return ResponseEntity.ok(ticketService.getTickets(request));
     }
 
-    @PatchMapping("/invalidateQ{id}")
+    @PatchMapping("/invalidate/{id}")
     public ResponseEntity<Void> invalidateTicket(@PathVariable Long id){
         ticketService.invalidateTicket(id);
         return ResponseEntity.noContent().build();

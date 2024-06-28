@@ -2,6 +2,7 @@ package com.example.project.rest.controllers;
 
 import com.example.project.rest.dto.ReviewRequestDto;
 import com.example.project.rest.services.ReviewService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,8 +17,9 @@ public class ReviewController {
     private ReviewService reviewService;
 
     @PostMapping("/add")
-    public ResponseEntity<Void> addReviewToFilm(@RequestBody @Valid ReviewRequestDto dto){
-        reviewService.addReview(dto);
+    public ResponseEntity<Void> addReviewToFilm(@RequestBody @Valid ReviewRequestDto dto,
+                                                HttpServletRequest request){
+        reviewService.addReview(dto,request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 

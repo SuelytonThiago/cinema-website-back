@@ -12,9 +12,5 @@ public class TicketRequestDto {
 
     @NotNull(message = "this session id cannot be null")
     private Long sessionId;
-
-    @NotNull(message = "this user id cannot be null")
-    private Long userId;
-
     private Double price;
 }

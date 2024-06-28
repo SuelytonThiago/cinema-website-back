@@ -2,6 +2,7 @@ package com.example.project.rest.controllers;
 
 import com.example.project.rest.dto.UserRequestDto;
 import com.example.project.rest.services.UsersService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,9 +22,10 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PatchMapping("/update/{id}")
-    public ResponseEntity<Void> updateUser(@RequestBody @Valid UserRequestDto dto, @PathVariable Long id){
-        usersService.updateUserData(dto,id);
+    @PatchMapping("/update")
+    public ResponseEntity<Void> updateUser(@RequestBody @Valid UserRequestDto dto,
+                                           HttpServletRequest request){
+        usersService.updateUserData(dto,request);
         return ResponseEntity.noContent().build();
     }
 

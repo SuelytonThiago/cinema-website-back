@@ -7,17 +7,19 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
 @Entity
 @Table(name = "sessions")
-public class Sessions {
+public class Sessions implements Serializable {
 
     public static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss a");
 
@@ -47,5 +49,18 @@ public class Sessions {
 
     public static LocalDateTime convertStringToLocalDateTime(String data){
         return LocalDateTime.parse(data,formatter);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Sessions sessions = (Sessions) o;
+        return Objects.equals(id, sessions.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
     }
 }

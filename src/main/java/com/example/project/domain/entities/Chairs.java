@@ -8,12 +8,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+import java.util.Objects;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
 @Entity
 @Table(name = "chairs")
-public class Chairs {
+public class Chairs implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,4 +45,16 @@ public class Chairs {
         return chair;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Chairs chairs = (Chairs) o;
+        return Objects.equals(id, chairs.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(id);
+    }
 }

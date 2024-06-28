@@ -14,5 +14,4 @@ public class ReviewRequestDto {
     @NotNull(message = "enter a rating for the film")
     private Integer rating;
     private Long movieId;
-    private Long userId;
 }

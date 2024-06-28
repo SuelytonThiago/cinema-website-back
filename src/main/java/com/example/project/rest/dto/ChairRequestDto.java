@@ -14,9 +14,6 @@ public class ChairRequestDto {
     @NotBlank(message = "this name cannot be empty or null")
     public String name;
 
-    @NotNull(message = "this user id cannot be null" )
-    public Long userId;
-
     @NotNull(message = "this session id cannot be null")
     public Long sessionId;
 

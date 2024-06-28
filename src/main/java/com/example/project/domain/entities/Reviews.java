@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
 
@@ -17,7 +18,7 @@ import java.util.Objects;
 @Data
 @Entity
 @Table(name = "reviews")
-public class Reviews {
+public class Reviews implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

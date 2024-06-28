@@ -5,6 +5,7 @@ import com.example.project.domain.repositories.SessionsRepository;
 import com.example.project.rest.dto.SessionRequestDto;
 import com.example.project.rest.dto.SessionResponseDto;
 import com.example.project.rest.services.exceptions.ObjectNotFoundExceptions;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,12 +16,17 @@ public class SessionsService {
     private final SessionsRepository sessionsRepository;
     private final MovieService movieService;
 
+    public void saveSession(Sessions sessions){
+        sessionsRepository.save(sessions);
+    }
+
     public Sessions findById(Long id) {
         return sessionsRepository.findById(id).orElseThrow(
                 () -> new ObjectNotFoundExceptions("this room is not found")
         );
     }
 
+    @Transactional
     public void createSession(SessionRequestDto dto){
         var movie = movieService.findById(dto.getMovieId());
         sessionsRepository.save(Sessions.of(dto,movie));
@@ -31,6 +37,7 @@ public class SessionsService {
         return SessionResponseDto.of(findById(id));
     }
 
+    @Transactional
     public void updateSession(Long id,SessionRequestDto dto){
         var session  = findById(id);
         updateData(session,dto);
