@@ -29,6 +29,11 @@ public class MovieController {
         return ResponseEntity.ok(movieService.findMovieByName(name));
     }
 
+    @GetMapping
+    public ResponseEntity<List<MovieResponseDto>> findAll(){
+        return ResponseEntity.ok(movieService.findAll());
+    }
+
     @PutMapping("/update/{id}")
     public ResponseEntity<Void> updateMovie(@RequestBody @Valid MovieRequestDto dto,@PathVariable Long id){
         movieService.updateMovieData(id,dto);

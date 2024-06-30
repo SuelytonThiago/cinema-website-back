@@ -9,6 +9,10 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @AllArgsConstructor
 public class SessionsService {
@@ -22,7 +26,7 @@ public class SessionsService {
 
     public Sessions findById(Long id) {
         return sessionsRepository.findById(id).orElseThrow(
-                () -> new ObjectNotFoundExceptions("this room is not found")
+                () -> new ObjectNotFoundExceptions("this session is not found")
         );
     }
 
@@ -35,6 +39,12 @@ public class SessionsService {
 
     public SessionResponseDto getSessionInformation(Long id){
         return SessionResponseDto.of(findById(id));
+    }
+
+    public List<SessionResponseDto> getAllSessions(){
+        return sessionsRepository.findAllWithDateAfter(LocalDateTime.now())
+                .stream().map(SessionResponseDto::of)
+                .collect(Collectors.toList());
     }
 
     @Transactional

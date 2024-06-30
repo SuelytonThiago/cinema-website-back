@@ -13,7 +13,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
-import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 @Configuration
@@ -37,7 +36,6 @@ public class WebSecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http, HandlerMappingIntrospector introspector) throws Exception {
         MvcRequestMatcher.Builder builder = new MvcRequestMatcher.Builder(introspector);
 
-
         return http.csrf().disable()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -59,6 +57,10 @@ public class WebSecurityConfig {
                 .requestMatchers(builder.pattern("/api/sessions/add")).hasRole("ADMIN")
                 .requestMatchers(builder.pattern("/api/sessions/info/**")).permitAll()
                 .requestMatchers(builder.pattern("/api/sessions/update")).hasRole("ADMIN")
+                .requestMatchers(builder.pattern("/api/sessions")).permitAll()
+
+                .requestMatchers(builder.pattern("/api/auth/login")).permitAll()
+                .requestMatchers(builder.pattern("/api/auth/refresh")).hasAnyRole("USER","ADMIN")
 
                 .requestMatchers(builder.pattern("/api/tickets/purchase")).hasAnyRole("USER","ADMIN")
                 .requestMatchers(builder.pattern("/api/tickets")).hasAnyRole("USER","ADMIN")

@@ -8,12 +8,15 @@ import com.example.project.rest.services.exceptions.ObjectNotFoundExceptions;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
-public class UsersService {
+public class UsersService implements UserDetailsService {
 
     private final UsersRepository usersRepository;
     private final JwtService jwtService;
@@ -74,4 +77,9 @@ public class UsersService {
     }
 
 
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return usersRepository.findByEmail(username)
+                .orElseThrow(() -> new ObjectNotFoundExceptions("The user is not found"));
+    }
 }

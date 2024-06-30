@@ -22,4 +22,6 @@ public class MovieRequestDto implements Serializable {
     @NotBlank(message = "the release data cannot be empty or null")
     private String releaseData;
 
+    private String imageUrl;
+
 }

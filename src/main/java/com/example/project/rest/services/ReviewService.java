@@ -2,6 +2,7 @@ package com.example.project.rest.services;
 
 import com.example.project.domain.entities.Reviews;
 import com.example.project.domain.repositories.ReviewsRepository;
+import com.example.project.rest.dto.MovieResponseDto;
 import com.example.project.rest.dto.ReviewRequestDto;
 import com.example.project.rest.services.exceptions.CustomException;
 import com.example.project.rest.services.exceptions.ObjectNotFoundExceptions;
@@ -10,6 +11,8 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolationException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -38,6 +41,7 @@ public class ReviewService {
         return reviewsRepository.findById(id).orElseThrow(() ->
             new ObjectNotFoundExceptions("this review is not found"));
     }
+
 
     @Transactional
     public void updateReview(ReviewRequestDto dto,Long id){

@@ -23,19 +23,20 @@ public class JWTFilter extends OncePerRequestFilter {
     private JwtService jwtService;
 
     @Autowired
-    private UsersService usersService;
+    private UsersRepository repository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token;
-        var authHeader = request.getHeader("Authorization");
-        if( authHeader != null){
+        var authHeader =request.getHeader("Authorization");
+        if(authHeader != null){
             token = authHeader.replace("Bearer ","");
             var email = jwtService.getSubject(token);
-            var user = usersService.findByEmail(email);
-            var auth = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+            var user = repository.findByEmail(email).get();
+            var auth = new UsernamePasswordAuthenticationToken(user,null,user.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(auth);
         }
         filterChain.doFilter(request,response);
     }
+
 }

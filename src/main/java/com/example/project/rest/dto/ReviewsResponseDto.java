@@ -14,6 +14,7 @@ public class ReviewsResponseDto {
 
     private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
+    private Long id;
     private String userName;
     private String comment;
     private Integer rating;
@@ -25,6 +26,7 @@ public class ReviewsResponseDto {
         response.setRating(reviews.getRating());
         response.setDate(reviews.getDate().format(formatter));
         response.setUserName(reviews.getUser().getName());
+        response.setId(reviews.getId());
         return response;
     }
 }

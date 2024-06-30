@@ -35,7 +35,7 @@ public class Sessions implements Serializable {
     @JoinColumn(name = "movieId")
     private Movies movie;
 
-    @OneToMany(mappedBy = "sessions" )
+    @OneToMany(mappedBy = "session" )
     private List<Chairs> chairs = new ArrayList<>();
 
     public static Sessions of(SessionRequestDto dto, Movies movie){
@@ -48,6 +48,9 @@ public class Sessions implements Serializable {
     }
 
     public static LocalDateTime convertStringToLocalDateTime(String data){
+        if (data == null || data.isEmpty()) {
+            return null;
+        }
         return LocalDateTime.parse(data,formatter);
     }
 

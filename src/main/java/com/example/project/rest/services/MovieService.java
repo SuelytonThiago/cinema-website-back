@@ -32,6 +32,13 @@ public class MovieService {
                 .collect(Collectors.toList());
     }
 
+    public List<MovieResponseDto> findAll(){
+        return movieRepository.findAll()
+                .stream()
+                .map(MovieResponseDto::of)
+                .collect(Collectors.toList());
+    }
+
     public Movies findById(Long id){
         return movieRepository.findById(id).orElseThrow(
                 () -> new ObjectNotFoundExceptions("this movie is not found")

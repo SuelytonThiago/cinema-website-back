@@ -31,6 +31,8 @@ public class Movies implements Serializable {
     private String description;
     private LocalDate releaseData;
 
+    private String imageUrl;
+
     @OneToMany(mappedBy = "movie")
     private List<Reviews> reviews = new ArrayList<>();
 
@@ -39,6 +41,7 @@ public class Movies implements Serializable {
         movie.setName(dto.getName());
         movie.setDescription(dto.getDescription());
         movie.setReleaseData(LocalDate.parse(dto.getReleaseData(), formatter));
+        movie.setImageUrl(dto.getImageUrl());
         return movie;
     }
 

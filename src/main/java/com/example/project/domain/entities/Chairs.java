@@ -35,11 +35,11 @@ public class Chairs implements Serializable {
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name="sessionId")
-    private Sessions sessions;
+    private Sessions session;
 
     public static Chairs of(ChairRequestDto dto,Sessions sessions,Users user){
         var chair = new Chairs();
-        chair.setSessions(sessions);
+        chair.setSession(sessions);
         chair.setUser(user);
         chair.setName(dto.getName());
         return chair;

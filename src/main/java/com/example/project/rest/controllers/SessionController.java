@@ -10,6 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/sessions")
 public class SessionController {
@@ -27,6 +29,11 @@ public class SessionController {
     @GetMapping("/info/{id}")
     public ResponseEntity<SessionResponseDto> getInfoSession(@PathVariable Long id){
         return ResponseEntity.ok(sessionsService.getSessionInformation(id));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<SessionResponseDto>>getAll(){
+        return ResponseEntity.ok(sessionsService.getAllSessions());
     }
 
     @PatchMapping("/update/{id}")
