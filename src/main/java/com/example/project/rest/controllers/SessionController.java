@@ -31,6 +31,11 @@ public class SessionController {
         return ResponseEntity.ok(sessionsService.getSessionInformation(id));
     }
 
+    @GetMapping("/ofDay/{dayOfWeek}")
+    public ResponseEntity<List<SessionResponseDto>> findAllOnDayOfWeek(@PathVariable int dayOfWeek){
+         return ResponseEntity.ok(sessionsService.findAllOnDayOfWeek(dayOfWeek));
+    }
+
     @GetMapping
     public ResponseEntity<List<SessionResponseDto>>getAll(){
         return ResponseEntity.ok(sessionsService.getAllSessions());
