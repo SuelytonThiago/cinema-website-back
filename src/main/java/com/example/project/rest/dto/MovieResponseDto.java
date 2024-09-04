@@ -18,10 +18,12 @@ public class MovieResponseDto {
 
     private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
+    private Long id;
     private String name;
     private String description;
     private Double rating;
     private String releaseData;
+    private String imageUrl;
 
     private List<ReviewsResponseDto> reviews = new ArrayList<>();
 
@@ -32,6 +34,8 @@ public class MovieResponseDto {
         response.setRating(movie.getAverageRating());
         response.setReleaseData(movie.getReleaseData().format(formatter));
         response.setReviews(parseReviews(movie.getReviews()));
+        response.setId(movie.getId());
+        response.setImageUrl(movie.getImageUrl());
         return response;
     }
 
