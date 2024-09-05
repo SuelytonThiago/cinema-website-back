@@ -7,6 +7,8 @@ import com.example.project.rest.dto.MovieResponseDto;
 import com.example.project.rest.services.exceptions.ObjectNotFoundExceptions;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -27,9 +29,9 @@ public class MovieService {
     }
 
     @Transactional
-    public List<MovieResponseDto> findMovieByName(String name){
-        return movieRepository.findByNameLike(name).stream().map(MovieResponseDto::of)
-                .collect(Collectors.toList());//
+    public Page<Movies> findMovieByName(String name, int page, int size){
+        var pag = PageRequest.of(page,size);
+        return movieRepository.findByNameContainingIgnoreCase(name, pag);
     }
 
     public List<MovieResponseDto> findAll(){
