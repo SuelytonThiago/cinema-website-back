@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,6 +24,7 @@ public class SessionResponseDto{
     private String movieSynopsis;
     private Double rating;
     private String imageUrl;
+    private LocalDateTime dateStart;
     private List<ReviewsResponseDto> reviews = new ArrayList<>();
 
     public static SessionResponseDto of(Sessions session){
@@ -34,6 +36,7 @@ public class SessionResponseDto{
         response.setId(session.getId());
         response.setRating(session.getMovie().getAverageRating());
         response.setImageUrl(session.getMovie().getImageUrl());
+        response.setDateStart(session.getDateStart());
         return response;
     }
 

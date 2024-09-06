@@ -13,6 +13,4 @@ public interface SessionsRepository extends JpaRepository<Sessions,Long> {
     @Query("SELECT e FROM Sessions e WHERE e.dateStart > :currentDate")
     List<Sessions> findAllWithDateAfter(@Param("currentDate") LocalDateTime currentDate);
 
-    @Query(value = "SELECT * FROM sessions WHERE EXTRACT(DOW FROM date_start) = :dayOfWeek", nativeQuery = true)
-    List<Sessions> findAllByDaysOfWeek(@Param("dayOfWeek") int dayOfWeek);
 }

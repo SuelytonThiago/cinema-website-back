@@ -54,12 +54,6 @@ public class SessionsService {
         sessionsRepository.save(session);
     }
 
-    public List<SessionResponseDto> findAllOnDayOfWeek(int dayOfWeek){
-        return sessionsRepository.findAllByDaysOfWeek(dayOfWeek)
-                .stream().map(SessionResponseDto::of)
-                .collect(Collectors.toList());
-    }
-
     private void updateData(Sessions sessions, SessionRequestDto dto){
         sessions.setName(dto.getName());
         sessions.setDateStart(Sessions.convertStringToLocalDateTime(dto.getDateStart()));
