@@ -1,6 +1,7 @@
 package com.example.project.rest.controllers;
 
 import com.example.project.domain.entities.Sessions;
+import com.example.project.rest.dto.MovieResponseDto;
 import com.example.project.rest.dto.SessionRequestDto;
 import com.example.project.rest.dto.SessionResponseDto;
 import com.example.project.rest.services.SessionsService;

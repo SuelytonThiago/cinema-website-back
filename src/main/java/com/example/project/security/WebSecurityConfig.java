@@ -43,12 +43,13 @@ public class WebSecurityConfig {
                 .requestMatchers(builder.pattern("/api/users/create")).permitAll()
                 .requestMatchers(builder.pattern("/api/users/update")).hasAnyRole("USER","ADMIN")
 
-                .requestMatchers(builder.pattern("/api/chairs/add")).hasAnyRole("USER","ADMIN")
+                .requestMatchers(builder.pattern("/api/chairs/**")).permitAll()
 
                 .requestMatchers(builder.pattern("/api/movies/add")).hasRole("ADMIN")
                 .requestMatchers(builder.pattern("/api/movies/search")).permitAll()
                 .requestMatchers(builder.pattern("/api/movies/update/**")).hasRole("ADMIN")
                 .requestMatchers(builder.pattern("/api/movies/delete/**")).hasRole("ADMIN")
+                .requestMatchers(builder.pattern("/api/movies/**")).permitAll()
 
                 .requestMatchers(builder.pattern("/api/reviews/add")).hasAnyRole("USER","ADMIN")
                 .requestMatchers(builder.pattern("/api/reviews/update/**")).hasAnyRole("USER","ADMIN")
@@ -57,8 +58,7 @@ public class WebSecurityConfig {
                 .requestMatchers(builder.pattern("/api/sessions/add")).hasRole("ADMIN")
                 .requestMatchers(builder.pattern("/api/sessions/info/**")).permitAll()
                 .requestMatchers(builder.pattern("/api/sessions/update")).hasRole("ADMIN")
-                .requestMatchers(builder.pattern("/api/sessions")).permitAll()
-                .requestMatchers(builder.pattern("/api/sessions/ofDay/**")).permitAll()
+                .requestMatchers(builder.pattern("/api/sessions")).permitAll() 
 
                 .requestMatchers(builder.pattern("/api/auth/login")).permitAll()
                 .requestMatchers(builder.pattern("/api/auth/refresh")).hasAnyRole("USER","ADMIN")

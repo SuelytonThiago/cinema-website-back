@@ -37,11 +37,13 @@ public class Tickets implements Serializable {
 
     private boolean expired;
 
-    public static Tickets of(Users user, Sessions session){
+    public static Tickets of(TicketRequestDto dto, Users user, Sessions session, Chairs chair){
         var ticket = new Tickets();
         ticket.setUser(user);
         ticket.setSession(session);
         ticket.setExpired(false);
+        ticket.setChair(chair);
+        ticket.setPrice(dto.getPrice());
         return ticket;
     }
 

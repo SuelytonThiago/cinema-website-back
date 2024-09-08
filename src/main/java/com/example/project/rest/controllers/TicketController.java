@@ -19,8 +19,8 @@ public class TicketController {
     @Autowired
     private TicketService ticketService;
 
-    @PostMapping("/purchase")
-    public ResponseEntity<Void> purchaseTicket(@RequestBody @Valid TicketRequestDto dto, HttpServletRequest request){
+    @PostMapping("/add")
+    public ResponseEntity<Void> addTicket(@RequestBody @Valid TicketRequestDto dto, HttpServletRequest request){
         ticketService.createTicket(dto,request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }

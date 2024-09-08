@@ -47,6 +47,12 @@ public class MovieService {
         );
     }
 
+    public MovieResponseDto findMovieById(Long id){
+        return MovieResponseDto.of(movieRepository.findById(id).orElseThrow(
+                () -> new ObjectNotFoundExceptions("this movie is not found")
+        ));
+    }
+
     @Transactional
     public void updateMovieData(Long id,MovieRequestDto dto){
         var movie = findById(id);

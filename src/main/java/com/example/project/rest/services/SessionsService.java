@@ -2,6 +2,7 @@ package com.example.project.rest.services;
 
 import com.example.project.domain.entities.Sessions;
 import com.example.project.domain.repositories.SessionsRepository;
+import com.example.project.rest.dto.ChairResponseDto;
 import com.example.project.rest.dto.SessionRequestDto;
 import com.example.project.rest.dto.SessionResponseDto;
 import com.example.project.rest.services.exceptions.ObjectNotFoundExceptions;

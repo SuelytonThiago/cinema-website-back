@@ -1,9 +1,11 @@
 package com.example.project.rest.services;
 
+import com.example.project.domain.entities.Chairs;
 import com.example.project.domain.entities.Tickets;
 import com.example.project.domain.repositories.TicketsRepository;
 import com.example.project.rest.dto.TicketRequestDto;
 import com.example.project.rest.dto.TicketsResponseDto;
+import com.example.project.rest.services.exceptions.CustomException;
 import com.example.project.rest.services.exceptions.ObjectNotFoundExceptions;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
@@ -33,7 +35,23 @@ public class TicketService {
         var userId = jwtService.getClaimId(request);
         var user = usersService.findById(userId);
         var session = sessionsService.findById(dto.getSessionId());
-        ticketsRepository.save(Tickets.of(user,session));
+
+        if(!session.isChairAvailable(dto.getChairNumber())){
+            throw new CustomException("the chair is already occupied");
+        }
+
+        if(dto.getChairNumber() < 0 || dto.getChairNumber() >= session.getChairsAvailable().length){
+            throw new CustomException("the chair number is invalid");
+        }
+
+        session.reserveChair(dto.getChairNumber());
+
+        var chair = new Chairs();
+        chair.setUser(user);
+        chair.setSession(session);
+        chair.setNumber(dto.getChairNumber());
+        var savedChair = chairService.saveChair(chair);
+        ticketsRepository.save(Tickets.of(dto, user, session, savedChair));
     }
 
     @Transactional
