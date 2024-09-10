@@ -29,6 +29,11 @@ public class ReviewService {
             var userId = jwtService.getClaimId(request);
             var user = usersService.findById(userId);
             var movie = movieService.findById(dto.getMovieId());
+
+            reviewsRepository.findByUser(user).ifPresent(e -> {
+                throw new CustomException("Have you already given your opinion on this film");
+            });
+
             var review = reviewsRepository.save(Reviews.of(dto,user,movie));
             movie.getReviews().add(review);
 

@@ -20,6 +20,7 @@ public class SessionResponseDto{
 
     private Long id;
     private String movieName;
+    private String sessionName;
     private String duration;
     private String movieSynopsis;
     private Double rating;
@@ -37,6 +38,7 @@ public class SessionResponseDto{
         response.setRating(session.getMovie().getAverageRating());
         response.setImageUrl(session.getMovie().getImageUrl());
         response.setDateStart(session.getDateStart());
+        response.setSessionName(session.getName());
         return response;
     }
 

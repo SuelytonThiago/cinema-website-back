@@ -39,7 +39,7 @@ public class Sessions implements Serializable {
     @OneToMany(mappedBy = "session" )
     private List<Chairs> chairs = new ArrayList<>();
 
-    private boolean[] chairsAvailable = new boolean[40];
+    private boolean[] chairsAvailable = new boolean[80];
 
     public static Sessions of(SessionRequestDto dto, Movies movie){
         var room = new Sessions();
