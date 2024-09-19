@@ -1,5 +1,6 @@
 package com.example.project.rest.dto;
 
+import com.example.project.domain.entities.Categories;
 import com.example.project.domain.entities.Movies;
 import com.example.project.domain.entities.Reviews;
 import lombok.AllArgsConstructor;
@@ -9,6 +10,7 @@ import lombok.NoArgsConstructor;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @NoArgsConstructor
@@ -24,6 +26,7 @@ public class MovieResponseDto {
     private Double rating;
     private String releaseData;
     private String imageUrl;
+    private List<CategoryResponseDto> categories = new ArrayList<>();
 
     private List<ReviewsResponseDto> reviews = new ArrayList<>();
 
@@ -36,10 +39,15 @@ public class MovieResponseDto {
         response.setReviews(parseReviews(movie.getReviews()));
         response.setId(movie.getId());
         response.setImageUrl(movie.getImageUrl());
+        response.setCategories(parseCategories(movie.getCategories()));
         return response;
     }
 
     private static List<ReviewsResponseDto> parseReviews(List<Reviews> reviews){
         return reviews.stream().map(ReviewsResponseDto::of).collect(Collectors.toList());
+    }
+
+    private static List<CategoryResponseDto> parseCategories(Set<Categories> categories){
+        return categories.stream().map(CategoryResponseDto::of).collect(Collectors.toList());
     }
 }

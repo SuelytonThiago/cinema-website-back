@@ -1,6 +1,7 @@
 package com.example.project.rest.controllers;
 
 import com.example.project.rest.dto.UserRequestDto;
+import com.example.project.rest.dto.UserResponseDto;
 import com.example.project.rest.services.UsersService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -27,6 +28,11 @@ public class UserController {
                                            HttpServletRequest request){
         usersService.updateUserData(dto,request);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping
+    public ResponseEntity<UserResponseDto> findById(HttpServletRequest request) {
+        return ResponseEntity.ok(usersService.findUserById(request));
     }
 
 }

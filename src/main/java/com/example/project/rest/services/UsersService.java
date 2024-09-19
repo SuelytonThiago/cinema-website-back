@@ -3,6 +3,7 @@ package com.example.project.rest.services;
 import com.example.project.domain.entities.Users;
 import com.example.project.domain.repositories.UsersRepository;
 import com.example.project.rest.dto.UserRequestDto;
+import com.example.project.rest.dto.UserResponseDto;
 import com.example.project.rest.services.exceptions.AlreadyExistsExceptions;
 import com.example.project.rest.services.exceptions.ObjectNotFoundExceptions;
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,6 +35,7 @@ public class UsersService implements UserDetailsService {
         findFirstUserByEmailOrCpf(userDto.getEmail(),userDto.getCpf());
         var user = Users.of(userDto);
         user.setPassword(encoder.encode(user.getPassword()));
+        user.setProfileImg("https://cdn-icons-png.flaticon.com/512/3106/3106921.png");
         user.getRoles().add(roleService.findByName("ROLE_USER"));
         usersRepository.save(user);
     }
@@ -48,6 +50,11 @@ public class UsersService implements UserDetailsService {
         return usersRepository.findById(id).orElseThrow(
                 () -> new ObjectNotFoundExceptions("The user is not found")
         );
+    }
+
+    public UserResponseDto findUserById(HttpServletRequest request){
+        var id = jwtService.getClaimId(request);
+        return UserResponseDto.of(findById(id));
     }
 
 

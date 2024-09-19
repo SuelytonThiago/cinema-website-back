@@ -9,9 +9,7 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -32,6 +30,12 @@ public class Movies implements Serializable {
     private LocalDate releaseData;
 
     private String imageUrl;
+
+    @ManyToMany
+    @JoinTable(name = "movies_categories",
+    joinColumns = @JoinColumn(name = "movie_id"),
+    inverseJoinColumns = @JoinColumn(name = "category_id"))
+    private Set<Categories> categories = new HashSet<>();
 
     @OneToMany(mappedBy = "movie")
     private List<Reviews> reviews = new ArrayList<>();

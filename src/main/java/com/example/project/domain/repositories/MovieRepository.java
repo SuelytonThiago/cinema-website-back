@@ -1,5 +1,6 @@
 package com.example.project.domain.repositories;
 
+import com.example.project.domain.entities.Categories;
 import com.example.project.domain.entities.Movies;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,4 +16,6 @@ public interface MovieRepository extends JpaRepository<Movies, Long>  {
     List<Movies> findByNameLike(@Param("name") String name);
 
     Page<Movies> findByNameContainingIgnoreCase(String name, Pageable pageable);
+
+    List<Movies> findByCategories(Categories category);
 }

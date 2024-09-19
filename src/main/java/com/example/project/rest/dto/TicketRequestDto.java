@@ -14,4 +14,5 @@ public class TicketRequestDto {
     private Long sessionId;
     private Double price;
     private Integer chairNumber;
+    private String type;
 }

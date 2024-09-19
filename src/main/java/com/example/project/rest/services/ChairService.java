@@ -31,7 +31,7 @@ public class ChairService {
         var session = sessionsService.findById(sessionId);
         for(int i=0;i<session.getChairsAvailable().length;i++){
             var chair = new ChairResponseDto();
-            chair.setChairNumber(i);
+            chair.setChairNumber(i + 1);
             chair.setAvailable(session.isChairAvailable(i));
             list.add(chair);
         }

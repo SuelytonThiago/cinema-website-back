@@ -30,6 +30,7 @@ public class Users implements Serializable, UserDetails {
     private String cpf;
     private String contactNumber;
     private String password;
+    private String profileImg;
 
     @OneToMany(mappedBy = "user")
     private List<Tickets> tickets = new ArrayList<>();
@@ -47,6 +48,7 @@ public class Users implements Serializable, UserDetails {
         user.setContactNumber(dto.getContactNumber());
         user.setCpf(dto.getCpf());
         user.setPassword(dto.getPassword());
+        user.setProfileImg(dto.getProfileImg());
         return user;
     }
 

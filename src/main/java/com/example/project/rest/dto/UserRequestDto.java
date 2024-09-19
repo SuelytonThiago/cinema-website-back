@@ -31,5 +31,5 @@ public class UserRequestDto implements Serializable {
     @NotBlank(message = "the password cannot be empty or null")
     private String password;
 
-
+    private String profileImg;
 }

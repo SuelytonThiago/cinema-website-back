@@ -1,6 +1,8 @@
 package com.example.project.rest.controllers;
 
+import com.example.project.domain.entities.Categories;
 import com.example.project.domain.entities.Movies;
+import com.example.project.rest.dto.AddCategoryToMovieRequestDto;
 import com.example.project.rest.dto.MovieRequestDto;
 import com.example.project.rest.dto.MovieResponseDto;
 import com.example.project.rest.services.MovieService;
@@ -26,6 +28,12 @@ public class MovieController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    @PostMapping("/add/category")
+    public ResponseEntity<Void> addCategoryToFilm(@RequestBody AddCategoryToMovieRequestDto dto){
+        movieService.addCategoryToMovie(dto);
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("/search")
     public ResponseEntity<Page<Movies>> findByName(@RequestParam String name,
                                                    @RequestParam(defaultValue = "0") int page,
@@ -41,6 +49,11 @@ public class MovieController {
     @GetMapping("/{id}")
     public ResponseEntity<MovieResponseDto> findMovieById(@PathVariable Long id) {
         return ResponseEntity.ok(movieService.findMovieById(id));
+    }
+
+    @GetMapping("/category/{id}")
+    public ResponseEntity<List<MovieResponseDto>> findByCategory(@PathVariable Long id){
+        return ResponseEntity.ok(movieService.findAllByCategory(id));
     }
 
     @PutMapping("/update/{id}")

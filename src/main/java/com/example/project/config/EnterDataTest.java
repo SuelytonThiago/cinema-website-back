@@ -32,6 +32,7 @@ public class EnterDataTest implements CommandLineRunner {
         users.setContactNumber("99940028922");
         users.setCpf("61254591010");
         users.setPassword(encoder.encode("senha123"));
+        users.setProfileImg("https://cdn-icons-png.flaticon.com/512/3106/3106921.png");
         usersRepository.save(users);
 
         Users users1 = new Users();
@@ -41,6 +42,7 @@ public class EnterDataTest implements CommandLineRunner {
         users1.setContactNumber("99940028922");
         users1.setCpf("87466407030");
         users1.setPassword(encoder.encode("senha123"));
+        users1.setProfileImg("https://cdn-icons-png.flaticon.com/512/3106/3106921.png");
         usersRepository.save(users1);
 
 

@@ -1,5 +1,6 @@
 package com.example.project.domain.entities;
 
+
 import com.example.project.rest.dto.TicketRequestDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -7,7 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+
 import java.util.Objects;
 
 @NoArgsConstructor
@@ -29,6 +30,8 @@ public class Tickets implements Serializable {
     @JoinColumn(name = "userId")
     private Users user;
 
+    private String type;
+
     private Double price;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
@@ -44,6 +47,7 @@ public class Tickets implements Serializable {
         ticket.setExpired(false);
         ticket.setChair(chair);
         ticket.setPrice(dto.getPrice());
+        ticket.setType(dto.getType());
         return ticket;
     }
 
