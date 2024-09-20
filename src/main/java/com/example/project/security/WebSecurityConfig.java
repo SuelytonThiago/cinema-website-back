@@ -44,7 +44,7 @@ public class WebSecurityConfig {
                 .requestMatchers(builder.pattern("/api/users/update")).hasAnyRole("USER","ADMIN")
 
                 .requestMatchers(builder.pattern("/api/categories/add")).hasRole("ADMIN")
-                .requestMatchers(builder.pattern("/api/categories/")).permitAll()
+                .requestMatchers(builder.pattern("/api/categories")).permitAll()
 
                 .requestMatchers(builder.pattern("/api/chairs/**")).permitAll()
 

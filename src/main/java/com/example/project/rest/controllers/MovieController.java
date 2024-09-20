@@ -1,14 +1,10 @@
 package com.example.project.rest.controllers;
-
-import com.example.project.domain.entities.Categories;
-import com.example.project.domain.entities.Movies;
 import com.example.project.rest.dto.AddCategoryToMovieRequestDto;
 import com.example.project.rest.dto.MovieRequestDto;
 import com.example.project.rest.dto.MovieResponseDto;
 import com.example.project.rest.services.MovieService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,10 +31,8 @@ public class MovieController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<Page<Movies>> findByName(@RequestParam String name,
-                                                   @RequestParam(defaultValue = "0") int page,
-                                                   @RequestParam(defaultValue = "12") int size){
-        return ResponseEntity.ok(movieService.findMovieByName(name, page, size));
+    public ResponseEntity<List<MovieResponseDto>> findByName(@RequestParam String name){
+        return ResponseEntity.ok(movieService.findMovieByName(name));
     }
 
     @GetMapping
