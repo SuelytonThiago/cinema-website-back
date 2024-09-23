@@ -2,8 +2,8 @@ package com.example.project.rest.services;
 
 import com.example.project.domain.entities.Reviews;
 import com.example.project.domain.repositories.ReviewsRepository;
-import com.example.project.rest.dto.MovieResponseDto;
 import com.example.project.rest.dto.ReviewRequestDto;
+import com.example.project.rest.dto.ReviewsResponseDto;
 import com.example.project.rest.services.exceptions.CustomException;
 import com.example.project.rest.services.exceptions.ObjectNotFoundExceptions;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,8 +11,6 @@ import jakarta.transaction.Transactional;
 import jakarta.validation.ConstraintViolationException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -30,7 +28,7 @@ public class ReviewService {
             var user = usersService.findById(userId);
             var movie = movieService.findById(dto.getMovieId());
 
-            reviewsRepository.findByUser(user).ifPresent(e -> {
+            reviewsRepository.findByUserAndMovie(user, movie).ifPresent(e -> {
                 throw new CustomException("Have you already given your opinion on this film");
             });
 
@@ -45,6 +43,14 @@ public class ReviewService {
     public Reviews findById(Long id){
         return reviewsRepository.findById(id).orElseThrow(() ->
             new ObjectNotFoundExceptions("this review is not found"));
+    }
+
+    @Transactional
+    public ReviewsResponseDto findByUserAndMovie(Long userId,Long movieId ){
+        var user = usersService.findById(userId);
+        var movie = movieService.findById(movieId   );
+        return reviewsRepository.findByUserAndMovie(user, movie).map(ReviewsResponseDto::of)
+                .orElseThrow(() -> new CustomException("this user review is not found"));
     }
 
 

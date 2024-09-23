@@ -16,6 +16,7 @@ public class ReviewsResponseDto {
 
     private Long id;
     private String userName;
+    private String profileImgUser;
     private String comment;
     private Integer rating;
     private String date;
@@ -27,6 +28,7 @@ public class ReviewsResponseDto {
         response.setDate(reviews.getDate().format(formatter));
         response.setUserName(reviews.getUser().getName());
         response.setId(reviews.getId());
+        response.setProfileImgUser(reviews.getUser().getProfileImg());
         return response;
     }
 }

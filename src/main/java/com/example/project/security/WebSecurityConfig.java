@@ -57,6 +57,7 @@ public class WebSecurityConfig {
                 .requestMatchers(builder.pattern("/api/movies/**")).permitAll()
 
                 .requestMatchers(builder.pattern("/api/reviews/add")).hasAnyRole("USER","ADMIN")
+                .requestMatchers(builder.pattern("/api/reviews/data/**")).hasAnyRole("USER","ADMIN")
                 .requestMatchers(builder.pattern("/api/reviews/update/**")).hasAnyRole("USER","ADMIN")
                 .requestMatchers(builder.pattern("/api/reviews/delete/**")).hasAnyRole("USER","ADMIN")
 

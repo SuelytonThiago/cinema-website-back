@@ -1,6 +1,7 @@
 package com.example.project.rest.controllers;
 
 import com.example.project.rest.dto.ReviewRequestDto;
+import com.example.project.rest.dto.ReviewsResponseDto;
 import com.example.project.rest.services.ReviewService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -28,6 +29,12 @@ public class ReviewController {
                                              @PathVariable Long id){
         reviewService.updateReview(dto,id);
         return ResponseEntity.noContent().build();
+    }
+
+
+    @GetMapping("/data/{userId}/{movieId}")
+    public ResponseEntity<ReviewsResponseDto> getUserReview(@PathVariable Long userId, @PathVariable Long movieId){
+        return ResponseEntity.ok(reviewService.findByUserAndMovie(userId,movieId));
     }
 
     @DeleteMapping("/delete/{id}")
