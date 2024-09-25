@@ -32,6 +32,11 @@ public class SessionController {
         return ResponseEntity.ok(sessionsService.getSessionInformation(id));
     }
 
+    @GetMapping("/movie/{id}")
+    public ResponseEntity<List<SessionResponseDto>> findByMovie(@PathVariable Long id) {
+        return ResponseEntity.ok(sessionsService.findSessionsByMovie(id));
+    }
+
     @GetMapping
     public ResponseEntity<List<SessionResponseDto>>getAll(){
         return ResponseEntity.ok(sessionsService.getAllSessions());

@@ -64,7 +64,8 @@ public class WebSecurityConfig {
                 .requestMatchers(builder.pattern("/api/sessions/add")).hasRole("ADMIN")
                 .requestMatchers(builder.pattern("/api/sessions/info/**")).permitAll()
                 .requestMatchers(builder.pattern("/api/sessions/update")).hasRole("ADMIN")
-                .requestMatchers(builder.pattern("/api/sessions")).permitAll() 
+                .requestMatchers(builder.pattern("/api/sessions")).permitAll()
+                .requestMatchers(builder.pattern("/api/sessions/movie/**")).permitAll()
 
                 .requestMatchers(builder.pattern("/api/auth/login")).permitAll()
                 .requestMatchers(builder.pattern("/api/auth/refresh")).hasAnyRole("USER","ADMIN")

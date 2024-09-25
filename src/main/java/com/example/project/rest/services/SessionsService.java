@@ -32,6 +32,14 @@ public class SessionsService {
     }
 
     @Transactional
+    public List<SessionResponseDto> findSessionsByMovie(Long movieId){
+        var movie = movieService.findById(movieId);
+        return sessionsRepository.findAllWithDateAfterAndMovie(LocalDateTime.now(), movie).stream()
+                .map(SessionResponseDto::of)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
     public void createSession(SessionRequestDto dto){
         var movie = movieService.findById(dto.getMovieId());
         sessionsRepository.save(Sessions.of(dto,movie));
