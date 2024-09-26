@@ -28,6 +28,7 @@ public class Movies implements Serializable {
     @Column(length = 10000)
     private String description;
     private LocalDate releaseData;
+    private String classification;
 
     private String imageUrl;
 

@@ -26,6 +26,7 @@ public class MovieResponseDto {
     private Double rating;
     private String releaseData;
     private String imageUrl;
+    private String classification;
     private List<CategoryResponseDto> categories = new ArrayList<>();
 
     private List<ReviewsResponseDto> reviews = new ArrayList<>();
@@ -40,6 +41,7 @@ public class MovieResponseDto {
         response.setId(movie.getId());
         response.setImageUrl(movie.getImageUrl());
         response.setCategories(parseCategories(movie.getCategories()));
+        response.setClassification(movie.getClassification());
         return response;
     }
 
