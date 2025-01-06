@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
@@ -23,12 +24,7 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @PatchMapping("/update")
-    public ResponseEntity<Void> updateUser(@RequestBody @Valid UserRequestDto dto,
-                                           HttpServletRequest request){
-        usersService.updateUserData(dto,request);
-        return ResponseEntity.noContent().build();
-    }
+
 
     @GetMapping
     public ResponseEntity<UserResponseDto> findById(HttpServletRequest request) {

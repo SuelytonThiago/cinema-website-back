@@ -5,6 +5,7 @@ import com.example.project.domain.repositories.UsersRepository;
 import com.example.project.rest.dto.UserRequestDto;
 import com.example.project.rest.dto.UserResponseDto;
 import com.example.project.rest.services.exceptions.AlreadyExistsExceptions;
+import com.example.project.rest.services.exceptions.CustomException;
 import com.example.project.rest.services.exceptions.ObjectNotFoundExceptions;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
@@ -63,9 +64,16 @@ public class UsersService implements UserDetailsService {
         var userId = jwtService.getClaimId(request);
         var user = findById(userId);
         verifyCpfAndEmailAlreadyInUse(user, dto.getEmail(), dto.getCpf());
+        if(verifyPasswordToChangeUserData(dto.getPassword(), user)){
+            throw new CustomException("incorrect password");
+        }
         updateData(dto,user);
         usersRepository.save(user);
 
+    }
+
+    private boolean verifyPasswordToChangeUserData(String password, Users user){
+        return encoder.matches(password, user.getPassword());
     }
 
     private void verifyCpfAndEmailAlreadyInUse(Users user, String email, String cpf){
