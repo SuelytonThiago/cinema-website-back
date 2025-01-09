@@ -3,7 +3,9 @@ package com.example.project.rest.services;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.example.project.domain.entities.Users;
+import com.example.project.rest.services.exceptions.NotAuthenticatedException;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -66,6 +68,7 @@ public class JwtService {
                 .getClaim("id")
                 .asLong();
     }
+
 
 
 }

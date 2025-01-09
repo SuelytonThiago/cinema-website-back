@@ -6,6 +6,7 @@ import com.example.project.rest.dto.UserRequestDto;
 import com.example.project.rest.dto.UserResponseDto;
 import com.example.project.rest.services.exceptions.AlreadyExistsExceptions;
 import com.example.project.rest.services.exceptions.CustomException;
+import com.example.project.rest.services.exceptions.NotAuthenticatedException;
 import com.example.project.rest.services.exceptions.ObjectNotFoundExceptions;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
@@ -70,6 +71,17 @@ public class UsersService implements UserDetailsService {
         updateData(dto,user);
         usersRepository.save(user);
 
+    }
+
+    public Users getUserAuthenticated(String authHead){
+        String token;
+        if(authHead != null) {
+            token = authHead.replace("Bearer ", "");
+            var email = jwtService.getSubject(token);
+            return findByEmail(email);
+        } else {
+            throw new NotAuthenticatedException("User is not authenticated");
+        }
     }
 
     private boolean verifyPasswordToChangeUserData(String password, Users user){

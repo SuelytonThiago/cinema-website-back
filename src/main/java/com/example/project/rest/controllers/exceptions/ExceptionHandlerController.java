@@ -2,6 +2,7 @@ package com.example.project.rest.controllers.exceptions;
 
 import com.example.project.rest.services.exceptions.AlreadyExistsExceptions;
 import com.example.project.rest.services.exceptions.CustomException;
+import com.example.project.rest.services.exceptions.NotAuthenticatedException;
 import com.example.project.rest.services.exceptions.ObjectNotFoundExceptions;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
@@ -51,4 +52,13 @@ public class ExceptionHandlerController {
         return problemDetail;
 
     }
+
+    @ExceptionHandler(NotAuthenticatedException.class)
+    public ProblemDetail notAuthorized(NotAuthenticatedException e){
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.FORBIDDEN);
+        problemDetail.setProperty("TimeStamp",LocalDate.now());
+        problemDetail.setProperty("Message", e.getMessage());
+        return problemDetail;
+    }
+
 }
