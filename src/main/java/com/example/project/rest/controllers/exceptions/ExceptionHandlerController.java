@@ -10,6 +10,7 @@ import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -56,6 +57,14 @@ public class ExceptionHandlerController {
     @ExceptionHandler(NotAuthenticatedException.class)
     public ProblemDetail notAuthorized(NotAuthenticatedException e){
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.FORBIDDEN);
+        problemDetail.setProperty("TimeStamp",LocalDate.now());
+        problemDetail.setProperty("Message", e.getMessage());
+        return problemDetail;
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ProblemDetail MaxUploadSizeExceeded(MaxUploadSizeExceededException e){
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
         problemDetail.setProperty("TimeStamp",LocalDate.now());
         problemDetail.setProperty("Message", e.getMessage());
         return problemDetail;
