@@ -1,7 +1,6 @@
 package com.example.project.domain.entities;
 
 import com.example.project.rest.dto.UserRequestDto;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -24,12 +24,11 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-
-
     @GetMapping
     public ResponseEntity<UserResponseDto> findById(HttpServletRequest request) {
         return ResponseEntity.ok(usersService.findUserById(request));
     }
+
 
 }
 
