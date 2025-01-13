@@ -41,6 +41,11 @@ public class WebSecurityConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and().authorizeHttpRequests()
                 .requestMatchers(builder.pattern("/api/users/create")).permitAll()
+                .requestMatchers(builder.pattern("api/recover-password")).permitAll()
+
+                // Permitir acesso aos arquivos estáticos
+                .requestMatchers("/img/**", "/css/**", "/js/**", "/static/**").permitAll()
+
                 .requestMatchers(builder.pattern("/api/users/update")).hasAnyRole("USER","ADMIN")
 
                 .requestMatchers(builder.pattern("/api/categories/add")).hasRole("ADMIN")

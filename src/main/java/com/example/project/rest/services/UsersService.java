@@ -8,6 +8,7 @@ import com.example.project.rest.services.exceptions.AlreadyExistsExceptions;
 import com.example.project.rest.services.exceptions.CustomException;
 import com.example.project.rest.services.exceptions.NotAuthenticatedException;
 import com.example.project.rest.services.exceptions.ObjectNotFoundExceptions;
+import com.example.project.rest.services.validations.Password;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -37,7 +38,7 @@ public class UsersService implements UserDetailsService {
         findFirstUserByEmailOrCpf(userDto.getEmail(),userDto.getCpf());
         var user = Users.of(userDto);
         user.setPassword(encoder.encode(user.getPassword()));
-        user.setProfileImg("https://cdn-icons-png.flaticon.com/512/3106/3106921.png");
+        user.setProfileImg("https://minhas-imagens-2025.s3.sa-east-1.amazonaws.com/user.jpg");
         user.getRoles().add(roleService.findByName("ROLE_USER"));
         usersRepository.save(user);
     }
@@ -83,6 +84,11 @@ public class UsersService implements UserDetailsService {
             throw new NotAuthenticatedException("User is not authenticated");
         }
     }
+    public void changePassword(Users user, String password){
+        user.setPassword( encoder.encode(password));
+        usersRepository.save(user);
+    }
+
 
     private boolean verifyPasswordToChangeUserData(String password, Users user){
         return encoder.matches(password, user.getPassword());

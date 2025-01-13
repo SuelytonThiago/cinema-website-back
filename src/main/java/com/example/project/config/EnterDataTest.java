@@ -44,8 +44,8 @@ public class EnterDataTest implements CommandLineRunner {
         users.setEmail("adm@example.com");
         users.setContactNumber("99940028922");
         users.setCpf("61254591010");
-        users.setPassword(encoder.encode("senha123"));
-        users.setProfileImg("https://cdn-icons-png.flaticon.com/512/3106/3106921.png");
+        users.setPassword(encoder.encode("Senha123"));
+        users.setProfileImg("https://minhas-imagens-2025.s3.sa-east-1.amazonaws.com/user.jpg");
         usersRepository.save(users);
 
         Users users1 = new Users();
@@ -54,8 +54,8 @@ public class EnterDataTest implements CommandLineRunner {
         users1.setEmail("maria@example.com");
         users1.setContactNumber("99940028922");
         users1.setCpf("87466407030");
-        users1.setPassword(encoder.encode("senha123"));
-        users1.setProfileImg("https://i0.wp.com/newdoorfiji.com/wp-content/uploads/2018/03/profile-img-1.jpg?ssl=1");
+        users1.setPassword(encoder.encode("Senha123"));
+        users1.setProfileImg("https://minhas-imagens-2025.s3.sa-east-1.amazonaws.com/user.jpg");
         usersRepository.save(users1);
 
 

@@ -1,36 +1,13 @@
 package com.example.project.config;
 
-import lombok.AllArgsConstructor;
-import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-
 @Configuration
-public class RabbitConfig{
-
-    public static final String QUEUE_MS_EMAIL = "MS_EMAIL";
-
-    @Bean
-    public Queue queue() {
-        return new Queue( QUEUE_MS_EMAIL);
-    }
-
-    @Bean
-    public RabbitAdmin rabbitAdmin(ConnectionFactory connectionFactory){
-        return new RabbitAdmin(connectionFactory);
-    }
-
-    @Bean
-    public ApplicationListener<ApplicationReadyEvent> applicationReadyEventApplicationListener(RabbitAdmin rabbitAdmin) {
-        return event -> rabbitAdmin.initialize();
-    }
+public class RabbitMQConfig {
 
     @Bean
     public Jackson2JsonMessageConverter messageConverter() {
@@ -43,5 +20,4 @@ public class RabbitConfig{
         rabbitTemplate.setMessageConverter(messageConverter);
         return rabbitTemplate;
     }
-
 }

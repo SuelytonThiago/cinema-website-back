@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sending email anonymous</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+            color: #191a1d;
+        }
+
+        .email-container .logo-email {
+            padding: 1rem;
+            background-color: #31333a;
+            color: #fff;
+            font-weight: bold;
+            font-size: 25px;
+        }
+
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .email-content {
+            margin: 2rem;
+        }
+
+        .recover-code {
+            margin-bottom: 1rem;
+        }
+
+        .code {
+            background-color: #f1efef;
+            width: 200px;
+            height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 25px;
+            font-weight: bold;
+            color: #31333a;
+            font-size: 20px;
+        }
+
+        .farewell {
+            margin: 2rem;
+            font-weight: bold;
+            margin-left: 1rem;
+        }
+
+        .baseboard {
+            background-color: #EBEBEB;
+            padding: 2rem;
+            /* Remover display: flex se não for necessário */
+        }
+
+        .img-icon {
+            max-width: 40px;
+            opacity: .8;
+            cursor: pointer;
+        }
+
+        .icon {
+            color: #36313a;
+            font-weight: bold;
+            font-size: 25px;
+        }
+
+        .links a,
+        .my-email {
+            text-decoration: none;
+        }
+
+    </style>
+
+</head>
+<body>
+    <div class="email-container">
+        <p class="logo-email">CINEMAX</p>
+        <div class="email-content">
+            <p>Recebemos uma solicitação para recuperar a senha em sua conta no nosso site utilizando o endereço de
+                e-mail <span class="email">{{email}}.</span>
+            </p>
+            <p>Se você não fez essa solicitação, por favor, ignore este e-mail. Sua senha permanecerá segura e
+                inalterada.
+                Caso
+                precise de assistência, entre em contato conosco.</p>
+        </div>
+        <div class="farewell">
+            <p>Atenciosamente,</p>
+            <p>A equipe do cinemax.</p>
+        </div>
+        <div class="baseboard">
+            <p class="icon">CINEMAX</p>
+            <div class="links">
+                <a href="https://www.linkedin.com/in/suelyton-souza-0baaa127a/" target="_blank">
+                    <img class="img-icon" src="https://minhas-imagens-2025.s3.sa-east-1.amazonaws.com/linkedin60.png"
+                         alt="LinkedIn">
+                </a>
+                <a href="https://github.com/SuelytonThiago" target="_blank">
+                    <img class="img-icon" src="https://minhas-imagens-2025.s3.sa-east-1.amazonaws.com/github60.png"
+                         alt="GitHub">
+                </a>
+            </div>
+
+            <div class="contact">
+                <p>Central de atendimento:
+                    <span>
+                        <a class="my-email" href="mailto:cinemaxsup@gmail.com?subject=Preciso de ajuda&body=Conteúdo do email">cinemaxsup@gmail.com</a>
+                    </span>
+                </p>
+            </div>
+            <div class="contact">
+                <p>Autor do projeto:
+                    <span>
+                        <a  class="my-email" href="mailto:suelytonsouza0202@gmail.com?subject=Sobre o projeto do site cinemax&body=Conteúdo do email">suelytonsouza0202@gmail.com</a>
+                    </span>
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
