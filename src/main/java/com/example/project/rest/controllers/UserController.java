@@ -31,7 +31,7 @@ public class UserController {
     }
 
     @PostMapping("/change-password")
-    public ResponseEntity<Void> createNewUser(@RequestParam @Password String password, HttpServletRequest request){
+    public ResponseEntity<Void> changePassword(@RequestParam @Password String password, HttpServletRequest request){
         var authHeader =request.getHeader("Authorization");
         var user = usersService.getUserAuthenticated(authHeader);
         usersService.changePassword(user, password);

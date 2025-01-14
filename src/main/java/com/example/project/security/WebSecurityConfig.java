@@ -42,6 +42,7 @@ public class WebSecurityConfig {
                 .and().authorizeHttpRequests()
                 .requestMatchers(builder.pattern("/api/users/create")).permitAll()
                 .requestMatchers(builder.pattern("api/recover-password")).permitAll()
+                .requestMatchers(builder.pattern("api/verify-code")).permitAll()
 
                 // Permitir acesso aos arquivos estáticos
                 .requestMatchers("/img/**", "/css/**", "/js/**", "/static/**").permitAll()

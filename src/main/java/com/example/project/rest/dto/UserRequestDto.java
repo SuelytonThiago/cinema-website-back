@@ -1,5 +1,6 @@
 package com.example.project.rest.dto;
 
+import com.example.project.rest.services.validations.Password;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -29,6 +30,7 @@ public class UserRequestDto implements Serializable {
     private String contactNumber;
 
     @NotBlank(message = "the password cannot be empty or null")
+    @Password
     private String password;
 
     private String profileImg;

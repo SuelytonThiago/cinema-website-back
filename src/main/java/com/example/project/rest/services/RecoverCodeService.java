@@ -50,7 +50,11 @@ public class RecoverCodeService {
         return code.toString();
     }
 
-    public void validateCode(String codeValue, Users user){
+    public String validateCode(String codeValue, String email){
+        var user = usersRepository.findByEmail(email).orElseThrow(
+                () -> new CustomException("invalid code!")
+        );
+
         var code = recoverCodeRepository.findByCodeAndUser(codeValue, user).orElseThrow(
                 () -> new CustomException("invalid code!")
         );
@@ -58,6 +62,8 @@ public class RecoverCodeService {
         if(!code.isValid()){
             throw new CustomException("expired code!");
         }
+
+        return jwtService.generateAccessToken(user);
     }
 
     @Transactional
@@ -82,7 +88,7 @@ public class RecoverCodeService {
 
                 rabbitMQService.sendEmailMessage(message);
 
-                return jwtService.generateAccessToken(user);
+                return email;
             }
 
             var htmlContent = new String(Files.readAllBytes(Paths.get(TEMPLATE_FILE_ANONYMOUS)));
@@ -97,7 +103,7 @@ public class RecoverCodeService {
 
             rabbitMQService.sendEmailMessage(message);
 
-            return null;
+            return email;
 
         } catch(IOException e){
             throw new CustomException("something went wrong with sending the email");
