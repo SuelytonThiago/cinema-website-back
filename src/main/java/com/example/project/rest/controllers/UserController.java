@@ -25,6 +25,14 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
+    @PutMapping("/update")
+    public ResponseEntity<Void> updatePassword(@RequestBody @Valid UserRequestDto dto,
+                                               @RequestParam String password,
+                                               HttpServletRequest request){
+        usersService.updateUserData(dto,request, password);
+        return ResponseEntity.noContent().build();
+    }
+
     @GetMapping
     public ResponseEntity<UserResponseDto> findById(HttpServletRequest request) {
         return ResponseEntity.ok(usersService.findUserById(request));

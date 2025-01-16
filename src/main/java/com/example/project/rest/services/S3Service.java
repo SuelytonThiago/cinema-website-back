@@ -71,10 +71,8 @@ public class S3Service {
     }
 
     private boolean isImage(MultipartFile file) throws IOException {
-        // Detecta o tipo de mídia real do arquivo
         String fileType = tika.detect(file.getInputStream());
 
-        // Verifica se é um tipo de imagem (se começa com 'image/')
         return fileType.startsWith("image/");
     }
 }

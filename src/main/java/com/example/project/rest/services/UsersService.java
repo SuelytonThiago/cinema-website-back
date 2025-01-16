@@ -62,16 +62,15 @@ public class UsersService implements UserDetailsService {
 
 
     @Transactional
-    public void updateUserData(UserRequestDto dto, HttpServletRequest request){
+    public void updateUserData(UserRequestDto dto, HttpServletRequest request, String password){
         var userId = jwtService.getClaimId(request);
         var user = findById(userId);
         verifyCpfAndEmailAlreadyInUse(user, dto.getEmail(), dto.getCpf());
-        if(verifyPasswordToChangeUserData(dto.getPassword(), user)){
+        if(!verifyPasswordToChangeUserData(password, user)){
             throw new CustomException("incorrect password");
         }
         updateData(dto,user);
         usersRepository.save(user);
-
     }
 
     public Users getUserAuthenticated(String authHead){

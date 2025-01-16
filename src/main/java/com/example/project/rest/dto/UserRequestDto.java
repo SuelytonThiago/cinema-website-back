@@ -29,7 +29,6 @@ public class UserRequestDto implements Serializable {
     @NotBlank(message = "the contact Number cannot be empty or null")
     private String contactNumber;
 
-    @NotBlank(message = "the password cannot be empty or null")
     @Password
     private String password;
 
