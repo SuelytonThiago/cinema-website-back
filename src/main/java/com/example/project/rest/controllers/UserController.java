@@ -2,6 +2,7 @@ package com.example.project.rest.controllers;
 
 import com.example.project.rest.dto.UserRequestDto;
 import com.example.project.rest.dto.UserResponseDto;
+import com.example.project.rest.dto.UserUpdateRequestDto;
 import com.example.project.rest.services.UsersService;
 import com.example.project.rest.services.validations.Password;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,20 +20,6 @@ public class UserController {
     @Autowired
     private UsersService  usersService;
 
-    @PostMapping("/create")
-    public ResponseEntity<Void> createNewUser(@RequestBody @Valid UserRequestDto dto){
-        usersService.createNewUser(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
-
-    @PutMapping("/update")
-    public ResponseEntity<Void> updatePassword(@RequestBody @Valid UserRequestDto dto,
-                                               @RequestParam String password,
-                                               HttpServletRequest request){
-        usersService.updateUserData(dto,request, password);
-        return ResponseEntity.noContent().build();
-    }
-
     @GetMapping
     public ResponseEntity<UserResponseDto> findById(HttpServletRequest request) {
         return ResponseEntity.ok(usersService.findUserById(request));
@@ -45,6 +32,37 @@ public class UserController {
         usersService.changePassword(user, password);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/create")
+    public ResponseEntity<Void> createNewUser(@RequestBody @Valid UserRequestDto dto){
+        usersService.createNewUser(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+
+    @PutMapping("/update")
+    public ResponseEntity<Void> updatePassword(@RequestBody @Valid UserUpdateRequestDto dto,
+                                               @RequestParam String password,
+                                               HttpServletRequest request){
+        var authHeader =request.getHeader("Authorization");
+        var user = usersService.getUserAuthenticated(authHeader);
+
+        usersService.updateUserData(dto,user, password);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/update-password")
+    public ResponseEntity<Void> updateUserPassword(@RequestParam String oldPassword,
+                                                   @RequestParam String newPassword,
+                                                   HttpServletRequest request){
+        var authHeader =request.getHeader("Authorization");
+        var user = usersService.getUserAuthenticated(authHeader);
+
+        usersService.createNewPassword(oldPassword,newPassword,user);
+        return ResponseEntity.noContent().build();
+    }
+
+
 
 
 }

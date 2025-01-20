@@ -4,6 +4,7 @@ import com.example.project.domain.entities.Users;
 import com.example.project.domain.repositories.UsersRepository;
 import com.example.project.rest.dto.UserRequestDto;
 import com.example.project.rest.dto.UserResponseDto;
+import com.example.project.rest.dto.UserUpdateRequestDto;
 import com.example.project.rest.services.exceptions.AlreadyExistsExceptions;
 import com.example.project.rest.services.exceptions.CustomException;
 import com.example.project.rest.services.exceptions.NotAuthenticatedException;
@@ -62,10 +63,7 @@ public class UsersService implements UserDetailsService {
 
 
     @Transactional
-    public void updateUserData(UserRequestDto dto, HttpServletRequest request, String password){
-        var userId = jwtService.getClaimId(request);
-        var user = findById(userId);
-        verifyCpfAndEmailAlreadyInUse(user, dto.getEmail(), dto.getCpf());
+    public void updateUserData(UserUpdateRequestDto dto, Users user, String password){
         if(!verifyPasswordToChangeUserData(password, user)){
             throw new CustomException("incorrect password");
         }
@@ -83,9 +81,19 @@ public class UsersService implements UserDetailsService {
             throw new NotAuthenticatedException("User is not authenticated");
         }
     }
+
     public void changePassword(Users user, String password){
         user.setPassword( encoder.encode(password));
         usersRepository.save(user);
+    }
+
+    public void createNewPassword(String oldPassword, String newPassword, Users user){
+        if(!verifyPasswordToChangeUserData(oldPassword,user)){
+            throw new CustomException("incorrect password");
+        }
+        user.setPassword(encoder.encode(newPassword));
+        usersRepository.save(user);
+
     }
 
 
@@ -93,19 +101,9 @@ public class UsersService implements UserDetailsService {
         return encoder.matches(password, user.getPassword());
     }
 
-    private void verifyCpfAndEmailAlreadyInUse(Users user, String email, String cpf){
-        var userVerify = usersRepository.findFirstByEmailOrCpf(email,cpf).get();
-        if(!user.getId().equals(userVerify.getId())){
-            throw new AlreadyExistsExceptions("This email or cpf already in use");
-        }
-    }
-
-    private void updateData(UserRequestDto dto, Users newUser){
+    private void updateData(UserUpdateRequestDto dto, Users newUser){
         newUser.setName(dto.getName());
         newUser.setContactNumber(dto.getContactNumber());
-        newUser.setEmail(dto.getEmail());
-        newUser.setCpf(dto.getCpf());
-        newUser.setPassword(encoder.encode(dto.getPassword()));
     }
 
 
