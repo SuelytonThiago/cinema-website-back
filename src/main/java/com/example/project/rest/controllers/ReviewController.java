@@ -3,6 +3,8 @@ package com.example.project.rest.controllers;
 import com.example.project.rest.dto.ReviewRequestDto;
 import com.example.project.rest.dto.ReviewsResponseDto;
 import com.example.project.rest.services.ReviewService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,12 +14,14 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/reviews")
+@SecurityRequirement(name = "bearerAuth")
 public class ReviewController {
 
     @Autowired
     private ReviewService reviewService;
 
     @PostMapping("/add")
+    @Operation(summary = "add a note and comment to the film")
     public ResponseEntity<Void> addReviewToFilm(@RequestBody @Valid ReviewRequestDto dto,
                                                 HttpServletRequest request){
         reviewService.addReview(dto,request);
@@ -25,6 +29,7 @@ public class ReviewController {
     }
 
     @PatchMapping("/update/{id}")
+    @Operation(summary = "update the note and/or comment")
     public ResponseEntity<Void> updateReview(@RequestBody @Valid ReviewRequestDto dto,
                                              @PathVariable Long id){
         reviewService.updateReview(dto,id);
@@ -33,11 +38,13 @@ public class ReviewController {
 
 
     @GetMapping("/data/{userId}/{movieId}")
+    @Operation(summary = "search user review by user id and movie id")
     public ResponseEntity<ReviewsResponseDto> getUserReview(@PathVariable Long userId, @PathVariable Long movieId){
         return ResponseEntity.ok(reviewService.findByUserAndMovie(userId,movieId));
     }
 
     @DeleteMapping("/delete/{id}")
+    @Operation(summary = "delete user review")
     public ResponseEntity<Void> deleteReview(@PathVariable Long id){
         reviewService.deleteReview(id);
         return ResponseEntity.noContent().build();

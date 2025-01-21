@@ -5,6 +5,8 @@ import com.example.project.rest.dto.UserResponseDto;
 import com.example.project.rest.dto.UserUpdateRequestDto;
 import com.example.project.rest.services.UsersService;
 import com.example.project.rest.services.validations.Password;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/users")
+@SecurityRequirement(name = "bearerAuth")
 public class UserController {
 
     @Autowired
@@ -26,6 +29,7 @@ public class UserController {
     }
 
     @PostMapping("/change-password")
+    @Operation(summary = "change user password")
     public ResponseEntity<Void> changePassword(@RequestParam @Password String password, HttpServletRequest request){
         var authHeader =request.getHeader("Authorization");
         var user = usersService.getUserAuthenticated(authHeader);
@@ -34,6 +38,7 @@ public class UserController {
     }
 
     @PostMapping("/create")
+    @Operation(summary = "create a new account")
     public ResponseEntity<Void> createNewUser(@RequestBody @Valid UserRequestDto dto){
         usersService.createNewUser(dto);
         return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -41,6 +46,7 @@ public class UserController {
 
 
     @PutMapping("/update")
+    @Operation(summary = "update user data")
     public ResponseEntity<Void> updatePassword(@RequestBody @Valid UserUpdateRequestDto dto,
                                                @RequestParam String password,
                                                HttpServletRequest request){
@@ -52,6 +58,7 @@ public class UserController {
     }
 
     @PutMapping("/update-password")
+    @Operation(summary = "change user password")
     public ResponseEntity<Void> updateUserPassword(@RequestParam String oldPassword,
                                                    @RequestParam String newPassword,
                                                    HttpServletRequest request){

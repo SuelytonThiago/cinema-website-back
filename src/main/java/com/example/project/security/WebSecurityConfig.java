@@ -44,8 +44,16 @@ public class WebSecurityConfig {
                 .requestMatchers(builder.pattern("api/recover-password")).permitAll()
                 .requestMatchers(builder.pattern("api/verify-code")).permitAll()
 
-                // Permitir acesso aos arquivos estáticos
-                .requestMatchers("/img/**", "/css/**", "/js/**", "/static/**").permitAll()
+                .requestMatchers(builder.pattern("/api/v1/auth/**")).permitAll()
+                .requestMatchers(builder.pattern("/v2/api-docs")).permitAll()
+                .requestMatchers(builder.pattern("/v3/api-docs/**")).permitAll()
+                .requestMatchers(builder.pattern("/swagger-resources")).permitAll()
+                .requestMatchers(builder.pattern("/swagger-resources/**")).permitAll()
+                .requestMatchers(builder.pattern("/configuration/ui")).permitAll()
+                .requestMatchers(builder.pattern("/configuration/security")).permitAll()
+                .requestMatchers(builder.pattern("/swagger-ui/**")).permitAll()
+                .requestMatchers(builder.pattern("/webjars/**")).permitAll()
+                .requestMatchers(builder.pattern("/swagger-ui.html")).permitAll()
 
                 .requestMatchers(builder.pattern("/api/users/update")).hasAnyRole("USER","ADMIN")
 

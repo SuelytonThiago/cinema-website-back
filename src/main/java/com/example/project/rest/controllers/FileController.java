@@ -1,6 +1,8 @@
 package com.example.project.rest.controllers;
 import com.example.project.rest.services.S3Service;
 import com.example.project.rest.services.UsersService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,6 +14,7 @@ import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/files")
+@SecurityRequirement(name = "bearerAuth")
 public class FileController {
 
     @Autowired
@@ -21,6 +24,7 @@ public class FileController {
     private UsersService usersService;
 
     @PostMapping("/upload")
+    @Operation(summary = "insert file into aws bucket")
     public ResponseEntity<String> uploadFile(@RequestParam("file")MultipartFile file, HttpServletRequest request) {
         var authHeader =request.getHeader("Authorization");
         var user = usersService.getUserAuthenticated(authHeader);
@@ -30,6 +34,7 @@ public class FileController {
 
 
     @GetMapping("/presigned-url")
+    @Operation(summary = "get the image url from within the aws bucket")
     public ResponseEntity<String> getPresignedUrl(HttpServletRequest request) {
         var authHeader =request.getHeader("Authorization");
         var user = usersService.getUserAuthenticated(authHeader);
