@@ -58,7 +58,13 @@ public class TicketService {
     public List<TicketsResponseDto> getTickets(HttpServletRequest request){
         var userId = jwtService.getClaimId(request);
         var user = usersService.findById(userId);
-        return ticketsRepository.findByUser(user).stream().map(TicketsResponseDto::of).collect(Collectors.toList());
+
+        var list =  ticketsRepository.findByUser(user).stream().map(TicketsResponseDto::of).collect(Collectors.toList());
+
+        if(list.isEmpty()) {
+            throw new ObjectNotFoundExceptions("you don't have any tickets");
+        }
+        return list;
     }
 
     public void invalidateTicket(Long id){

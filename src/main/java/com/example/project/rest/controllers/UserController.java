@@ -47,7 +47,7 @@ public class UserController {
 
     @PutMapping("/update")
     @Operation(summary = "update user data")
-    public ResponseEntity<Void> updatePassword(@RequestBody @Valid UserUpdateRequestDto dto,
+    public ResponseEntity<Void> updateUser(@RequestBody @Valid UserUpdateRequestDto dto,
                                                @RequestParam String password,
                                                HttpServletRequest request){
         var authHeader =request.getHeader("Authorization");

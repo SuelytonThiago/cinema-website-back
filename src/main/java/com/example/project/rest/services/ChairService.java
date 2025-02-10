@@ -35,7 +35,11 @@ public class ChairService {
             chair.setAvailable(session.isChairAvailable(i));
             list.add(chair);
         }
+        if(list.isEmpty()) {
+            throw new ObjectNotFoundExceptions("no chairs registered for this session");
+        }
         return list;
+
     }
 
     public Chairs saveChair(Chairs chairs){

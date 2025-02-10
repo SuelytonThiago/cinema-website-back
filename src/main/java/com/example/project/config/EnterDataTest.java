@@ -45,7 +45,7 @@ public class EnterDataTest implements CommandLineRunner {
         users.setContactNumber("99940028922");
         users.setCpf("61254591010");
         users.setPassword(encoder.encode("Senha123"));
-        users.setProfileImg("https://minhas-imagens-2025.s3.sa-east-1.amazonaws.com/user.jpg");
+        users.setProfileImg("https://minhas-imagens-2025.s3.sa-east-1.amazonaws.com/user.jpg    ");
         usersRepository.save(users);
 
         Users users1 = new Users();

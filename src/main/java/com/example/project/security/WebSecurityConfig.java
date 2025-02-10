@@ -43,6 +43,10 @@ public class WebSecurityConfig {
                 .requestMatchers(builder.pattern("/api/users/create")).permitAll()
                 .requestMatchers(builder.pattern("api/recover-password")).permitAll()
                 .requestMatchers(builder.pattern("api/verify-code")).permitAll()
+                .requestMatchers(builder.pattern("api/randomMovies")).permitAll()
+
+                .requestMatchers(builder.pattern("/ws/**")).permitAll()
+                .requestMatchers(builder.pattern("/**")).permitAll()
 
                 .requestMatchers(builder.pattern("/api/v1/auth/**")).permitAll()
                 .requestMatchers(builder.pattern("/v2/api-docs")).permitAll()

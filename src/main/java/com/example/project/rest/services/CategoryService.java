@@ -27,7 +27,11 @@ public class CategoryService {
     }
 
     public List<Categories> findAllCategories(){
-        return repository.findAll();
+        var list =  repository.findAll();
+        if(list.isEmpty()) {
+            throw new ObjectNotFoundExceptions("no categories found");
+        }
+        return list;
     }
 
     public Categories findById(Long id){

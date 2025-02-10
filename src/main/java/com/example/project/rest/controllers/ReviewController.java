@@ -10,6 +10,8 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -20,11 +22,17 @@ public class ReviewController {
     @Autowired
     private ReviewService reviewService;
 
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
+
     @PostMapping("/add")
+    @MessageMapping("/newComment")
     @Operation(summary = "add a note and comment to the film")
     public ResponseEntity<Void> addReviewToFilm(@RequestBody @Valid ReviewRequestDto dto,
                                                 HttpServletRequest request){
-        reviewService.addReview(dto,request);
+        var response = reviewService.addReview(dto,request);
+        messagingTemplate.convertAndSend("/topic/comments", response);
+
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -32,7 +40,10 @@ public class ReviewController {
     @Operation(summary = "update the note and/or comment")
     public ResponseEntity<Void> updateReview(@RequestBody @Valid ReviewRequestDto dto,
                                              @PathVariable Long id){
-        reviewService.updateReview(dto,id);
+
+        var response = reviewService.updateReview(dto,id);
+        messagingTemplate.convertAndSend("/topic/comments", response);
+
         return ResponseEntity.noContent().build();
     }
 

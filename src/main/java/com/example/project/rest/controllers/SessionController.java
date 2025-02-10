@@ -11,6 +11,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,11 +24,15 @@ public class SessionController {
     @Autowired
     private SessionsService sessionsService;
 
+    @Autowired
+    private SimpMessagingTemplate messagingTemplate;
 
     @PostMapping("/add")
     @Operation(summary = "add a new session")
     public ResponseEntity<Void> addSession(@RequestBody @Valid SessionRequestDto dto){
-        sessionsService.createSession(dto);
+        var response = sessionsService.createSession(dto);
+
+        messagingTemplate.convertAndSend("/topic/sessions", response);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 

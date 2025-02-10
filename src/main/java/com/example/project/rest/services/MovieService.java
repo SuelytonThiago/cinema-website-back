@@ -43,16 +43,25 @@ public class MovieService {
 
     @Transactional
     public List<MovieResponseDto> findMovieByName(String name){
-        return movieRepository.findByNameLike(name)
+        var list = movieRepository.findByNameLike(name)
                 .stream()
                 .map(MovieResponseDto::of).collect(Collectors.toList());
+        if(list.isEmpty()) {
+            throw new ObjectNotFoundExceptions("no movies found");
+        }
+        return list;
     }
 
     public List<MovieResponseDto> findAll(){
-        return movieRepository.findAll()
+        var list = movieRepository.findAll()
                 .stream()
                 .map(MovieResponseDto::of)
                 .collect(Collectors.toList());
+
+        if(list.isEmpty()) {
+            throw new ObjectNotFoundExceptions("no movies found");
+        }
+        return list;
     }
 
     public Movies findById(Long id){
@@ -69,10 +78,28 @@ public class MovieService {
 
     public List<MovieResponseDto> findAllByCategory(Long id){
         var category = categoryService.findById(id);
-        return movieRepository.findByCategories(category)
+        var list =  movieRepository.findByCategories(category)
                 .stream()
                 .map(MovieResponseDto::of)
                 .toList();
+        if(list.isEmpty()) {
+            throw new ObjectNotFoundExceptions("no movies found");
+        }
+        return list;
+    }
+
+    public List<MovieResponseDto> getRandomMovies() {
+        var randomIds = movieRepository.findRandomMovieIds(10);
+        var randomMovies = movieRepository.findMoviesByIds(randomIds)
+                .stream()
+                .map(MovieResponseDto::of)
+                .toList();
+
+        if(randomMovies.isEmpty()){
+            throw new ObjectNotFoundExceptions("no movies found");
+        }
+        return randomMovies;
+
     }
 
     @Transactional

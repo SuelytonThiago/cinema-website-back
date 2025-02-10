@@ -22,7 +22,7 @@ public class ReviewService {
     private final JwtService jwtService;
 
     @Transactional
-    public void addReview(ReviewRequestDto dto, HttpServletRequest request){
+    public ReviewsResponseDto addReview(ReviewRequestDto dto, HttpServletRequest request){
         try{
             var userId = jwtService.getClaimId(request);
             var user = usersService.findById(userId);
@@ -34,6 +34,7 @@ public class ReviewService {
 
             var review = reviewsRepository.save(Reviews.of(dto,user,movie));
             movie.getReviews().add(review);
+            return ReviewsResponseDto.of(review);
 
         } catch(ConstraintViolationException e){
             throw new CustomException("enter a grade between 1 and 5");
@@ -55,10 +56,11 @@ public class ReviewService {
 
 
     @Transactional
-    public void updateReview(ReviewRequestDto dto,Long id){
+        public ReviewsResponseDto updateReview(ReviewRequestDto dto,Long id){
         var review = findById(id);
         updateData(dto,review);
-        reviewsRepository.save(review);
+        var res = reviewsRepository.save(review);
+        return ReviewsResponseDto.of(res);
     }
 
     @Transactional

@@ -5,12 +5,14 @@ import com.example.project.domain.repositories.SessionsRepository;
 import com.example.project.rest.dto.ChairResponseDto;
 import com.example.project.rest.dto.SessionRequestDto;
 import com.example.project.rest.dto.SessionResponseDto;
+import com.example.project.rest.services.exceptions.CustomException;
 import com.example.project.rest.services.exceptions.ObjectNotFoundExceptions;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,16 +36,28 @@ public class SessionsService {
     @Transactional
     public List<SessionResponseDto> findSessionsByMovie(Long movieId){
         var movie = movieService.findById(movieId);
-        return sessionsRepository.findAllWithDateAfterAndMovie(LocalDateTime.now(), movie).stream()
+        var list = sessionsRepository.findAllWithDateAfterAndMovie(LocalDateTime.now(), movie).stream()
                 .map(SessionResponseDto::of)
                 .collect(Collectors.toList());
+        if(list.isEmpty()) {
+            throw new ObjectNotFoundExceptions("no sessions found");
+        }
+        return list;
     }
 
     @Transactional
-    public void createSession(SessionRequestDto dto){
-        var movie = movieService.findById(dto.getMovieId());
-        sessionsRepository.save(Sessions.of(dto,movie));
+    public SessionResponseDto createSession(SessionRequestDto dto){
+        try {
+            var movie = movieService.findById(dto.getMovieId());
+            var session = sessionsRepository.save(Sessions.of(dto,movie));
 
+            if(session.getDateStart().isBefore(LocalDateTime.now())){
+                throw new CustomException("the session date cannot be less than the current date");
+            }
+            return SessionResponseDto.of(session);
+        } catch(DateTimeParseException e) {
+            throw new CustomException("enter a valid date");
+        }
     }
 
     public SessionResponseDto getSessionInformation(Long id){
@@ -51,9 +65,13 @@ public class SessionsService {
     }
 
     public List<SessionResponseDto> getAllSessions(){
-        return sessionsRepository.findAllWithDateAfter(LocalDateTime.now())
+        var list =  sessionsRepository.findAllWithDateAfter(LocalDateTime.now())
                 .stream().map(SessionResponseDto::of)
                 .collect(Collectors.toList());
+        if(list.isEmpty()) {
+            throw new ObjectNotFoundExceptions("No sessions found");
+        }
+        return list;
     }
 
     @Transactional

@@ -59,6 +59,12 @@ public class MovieController {
         return ResponseEntity.ok(movieService.findAllByCategory(id));
     }
 
+    @GetMapping("/randomMovies")
+    @Operation(summary = "Get 10 random movies from the database")
+    public ResponseEntity<List<MovieResponseDto>> get10RandomMovies() {
+        return ResponseEntity.ok(movieService.getRandomMovies());
+    }
+
     @PutMapping("/update/{id}")
     @Operation(summary = "update movie data")
     public ResponseEntity<Void> updateMovie(@RequestBody @Valid MovieRequestDto dto,@PathVariable Long id){

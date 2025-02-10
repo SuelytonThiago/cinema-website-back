@@ -25,6 +25,7 @@ public class RecoverPassController {
     @Operation(summary = "send an email with a code to recover your password")
     public ResponseEntity<String> recoverPassword(@RequestParam @Email String email){
         return ResponseEntity.ok(recoverCodeService.recoverPassword(email));
+
     }
 
     @PostMapping("/verify-code")
