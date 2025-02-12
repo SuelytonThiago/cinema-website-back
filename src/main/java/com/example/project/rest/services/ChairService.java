@@ -7,6 +7,8 @@ import com.example.project.rest.services.exceptions.ObjectNotFoundExceptions;
 
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -18,10 +20,13 @@ public class ChairService {
 
     private final ChairRepository chairRepository;
     private final SessionsService sessionsService;
+    private final MessageSource messageSource;
 
     public Chairs findById(Long id){
+
         return chairRepository.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundExceptions("this chair is not found"));
+                .orElseThrow(() -> new ObjectNotFoundExceptions(
+                        messageSource.getMessage("chair.service.error.notFound", null, LocaleContextHolder.getLocale())));
     }
 
 
@@ -36,7 +41,8 @@ public class ChairService {
             list.add(chair);
         }
         if(list.isEmpty()) {
-            throw new ObjectNotFoundExceptions("no chairs registered for this session");
+            throw new ObjectNotFoundExceptions(
+                    messageSource.getMessage("chair.service.error.notRegistered", null, LocaleContextHolder.getLocale()));
         }
         return list;
 

@@ -6,6 +6,8 @@ import jakarta.transaction.Transactional;
 import org.apache.tika.Tika;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
@@ -37,6 +39,10 @@ public class S3Service {
     @Autowired
     private UsersRepository usersRepository;
 
+    @Autowired
+    private MessageSource messageSource;
+
+
     @Transactional
     public String uploadFileUserImg(MultipartFile file, Users user) {
         if(file.isEmpty()){
@@ -44,7 +50,10 @@ public class S3Service {
         }
         try{
             if(!isImage(file)){
-                throw new CustomException("File is not a valid image or was renamed incorrectly.");
+
+                throw new CustomException(
+                        messageSource.getMessage("s3.service.error.invalidImg", null, LocaleContextHolder.getLocale())
+                );
             }
             String fileName = UUID.randomUUID() + file.getOriginalFilename();
 
@@ -63,10 +72,14 @@ public class S3Service {
             return user.getProfileImg();
         }
         catch (IOException e){
-            throw new CustomException("something went wrong with the image upload: " + e.getMessage());
+
+            throw new CustomException(
+                    messageSource.getMessage("s3.service.error.sendingImg", null, LocaleContextHolder.getLocale())+ e.getMessage());
         }
         catch (MaxUploadSizeExceededException e){
-            throw new CustomException("maximum upload size exceeded");
+            throw new CustomException(
+                    messageSource.getMessage("s3.service.error.maxUpload", null, LocaleContextHolder.getLocale())
+            );
         }
     }
 

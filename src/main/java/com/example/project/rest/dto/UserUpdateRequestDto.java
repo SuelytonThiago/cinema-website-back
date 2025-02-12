@@ -11,9 +11,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UserUpdateRequestDto {
 
-    @NotBlank(message = "the name cannot be empty or null")
+    @NotBlank(message = "{user.dto.request.name}")
     private String name;
 
-    @NotBlank(message = "the contact Number cannot be empty or null")
+    @NotBlank(message = "{user.dto.request.contactNumber}")
     private String contactNumber;
 }

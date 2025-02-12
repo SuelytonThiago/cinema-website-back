@@ -9,6 +9,8 @@ import com.example.project.rest.services.exceptions.CustomException;
 import com.example.project.rest.services.exceptions.ObjectNotFoundExceptions;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -22,14 +24,18 @@ public class SessionsService {
 
     private final SessionsRepository sessionsRepository;
     private final MovieService movieService;
+    private final MessageSource messageSource;
 
     public void saveSession(Sessions sessions){
         sessionsRepository.save(sessions);
     }
 
     public Sessions findById(Long id) {
+
         return sessionsRepository.findById(id).orElseThrow(
-                () -> new ObjectNotFoundExceptions("this session is not found")
+                () -> new ObjectNotFoundExceptions(
+                        messageSource.getMessage("session.service.error.notFound", null, LocaleContextHolder.getLocale())
+                )
         );
     }
 
@@ -40,7 +46,9 @@ public class SessionsService {
                 .map(SessionResponseDto::of)
                 .collect(Collectors.toList());
         if(list.isEmpty()) {
-            throw new ObjectNotFoundExceptions("no sessions found");
+            throw new ObjectNotFoundExceptions(
+                    messageSource.getMessage("session.service.error.emptyList", null, LocaleContextHolder.getLocale())
+            );
         }
         return list;
     }
@@ -52,11 +60,16 @@ public class SessionsService {
             var session = sessionsRepository.save(Sessions.of(dto,movie));
 
             if(session.getDateStart().isBefore(LocalDateTime.now())){
-                throw new CustomException("the session date cannot be less than the current date");
+
+                throw new CustomException(
+                        messageSource.getMessage("session.service.error.addBeforeLocalDateNow", null, LocaleContextHolder.getLocale())
+                );
             }
             return SessionResponseDto.of(session);
         } catch(DateTimeParseException e) {
-            throw new CustomException("enter a valid date");
+            throw new CustomException(
+                    messageSource.getMessage("session.service.error.invalidDate", null, LocaleContextHolder.getLocale())
+            );
         }
     }
 
@@ -69,7 +82,10 @@ public class SessionsService {
                 .stream().map(SessionResponseDto::of)
                 .collect(Collectors.toList());
         if(list.isEmpty()) {
-            throw new ObjectNotFoundExceptions("No sessions found");
+
+            throw new ObjectNotFoundExceptions(
+                    messageSource.getMessage("session.service.error.emptyList", null, LocaleContextHolder.getLocale())
+            );
         }
         return list;
     }

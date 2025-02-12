@@ -13,19 +13,19 @@ import java.time.LocalDate;
 @Data
 public class MovieRequestDto implements Serializable {
 
-    @NotBlank(message = "the name cannot be empty or null")
+    @NotBlank(message = "{movie.dto.request.name}")
     private String name;
 
-    @NotBlank(message = "the description cannot be empty or null")
+    @NotBlank(message = "{movie.dto.request.description}")
     private String description;
 
-    @NotBlank(message = "the release data cannot be empty or null")
+    @NotBlank(message = "{movie.dto.request.releaseData}")
     private String releaseData;
 
-    @NotBlank(message = "the classification cannot be empty or null")
+    @NotBlank(message = "{movie.dto.request.classification}")
     private String classification;
 
-    @NotBlank(message = "the image url cannot be empty or null")
+    @NotBlank(message = "{movie.dto.request.imageUrl}")
     private String imageUrl;
 
 }

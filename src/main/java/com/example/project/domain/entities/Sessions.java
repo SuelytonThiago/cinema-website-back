@@ -64,12 +64,12 @@ public class Sessions implements Serializable {
 
     public void reserveChair(int index) {
         if (index < 0 || index >= chairsAvailable.length) {
-            throw new CustomException("Invalid chair number");
+            throw new CustomException("{ticket.service.error.invalidChairNumber}");
         }
         if (!chairsAvailable[index]) {
             chairsAvailable[index] = true;
         } else {
-            throw new CustomException("Chair is already occupied");
+            throw new CustomException("{ticket.service.error.chairOccupied}");
         }
     }
 

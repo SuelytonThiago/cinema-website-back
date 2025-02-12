@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 public class ReviewRequestDto {
 
     private String comment;
-    @NotNull(message = "enter a rating for the film")
+    @NotNull(message = "{review.dto.request.name}")
     private Integer rating;
     private Long movieId;
 }

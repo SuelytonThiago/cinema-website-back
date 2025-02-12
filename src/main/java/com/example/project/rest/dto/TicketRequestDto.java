@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class TicketRequestDto {
 
-    @NotNull(message = "this session id cannot be null")
+    @NotNull(message = "{ticket.dto.request.sessionId}")
     private Long sessionId;
     private Double price;
     private Integer chairNumber;

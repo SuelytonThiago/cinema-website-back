@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @Data
 public class CategoryRequestDto {
 
-    @NotBlank(message = "this name cannot be empty or null")
+    @NotBlank(message = "{category.dto.request.name}")
     private String name;
 }

@@ -15,21 +15,21 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class UserRequestDto implements Serializable {
 
-    @NotBlank(message = "the name cannot be empty or null")
+    @NotBlank(message = "{user.dto.request.name}")
     private String name;
 
-    @NotBlank(message = "the email cannot be empty or null")
-    @Email(message = "insert a valid email")
+    @NotBlank(message = "{email.dto.request.invalid}")
+    @Email(message = "{user.dto.request.email}")
     private String email;
 
-    @NotBlank(message = "the cpf cannot be empty or null")
-    @CPF(message = "insert a valid cpf")
+    @NotBlank(message = "{user.dto.request.cpf}")
+    @CPF(message = "{cpf.dto.request.invalid}")
     private String cpf;
 
-    @NotBlank(message = "the contact Number cannot be empty or null")
+    @NotBlank(message = "{user.dto.request.contactNumber}")
     private String contactNumber;
 
-    @Password
+    @Password(message = "{password.dto.request.invalid}")
     private String password;
 
     private String profileImg;

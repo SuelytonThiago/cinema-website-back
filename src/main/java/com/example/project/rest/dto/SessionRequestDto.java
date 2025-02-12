@@ -11,9 +11,9 @@ import lombok.NoArgsConstructor;
 @Data
 public class SessionRequestDto {
 
-    @NotBlank(message = "this name cannot be empty or null")
+    @NotBlank(message = "{session.dto.request.name}")
     private String name;
-    @NotNull(message = "this movie id cannot be null")
+    @NotNull(message = "{session.dto.request.movieId}")
     private Long movieId;
     private String dateStart;
     private String dateEnd;

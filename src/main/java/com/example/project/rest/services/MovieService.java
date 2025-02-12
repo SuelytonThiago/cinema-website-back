@@ -9,6 +9,8 @@ import com.example.project.rest.services.exceptions.CustomException;
 import com.example.project.rest.services.exceptions.ObjectNotFoundExceptions;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +26,7 @@ public class MovieService {
     public static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     private final CategoryService categoryService;
     private final MovieRepository movieRepository;
+    private final MessageSource messageSource;
 
     public void createMovie(MovieRequestDto dto){
         movieRepository.save(Movies.of(dto));
@@ -34,7 +37,10 @@ public class MovieService {
         var category = categoryService.findByName(dto.getCategoryName());
         var movie = findById(dto.getMovieId());
         if(movie.getCategories().contains(category)){
-            throw new CustomException("this category already added to movie");
+
+            throw new CustomException(
+                    messageSource.getMessage("movie.service.error.movieAlreadyAdded", null, LocaleContextHolder.getLocale())
+            );
         }
         movie.getCategories().add(category);
         movieRepository.save(movie);
@@ -47,7 +53,10 @@ public class MovieService {
                 .stream()
                 .map(MovieResponseDto::of).collect(Collectors.toList());
         if(list.isEmpty()) {
-            throw new ObjectNotFoundExceptions("no movies found");
+
+            throw new ObjectNotFoundExceptions(
+                    messageSource.getMessage("movie.service.error.emptyList", null, LocaleContextHolder.getLocale())
+            );
         }
         return list;
     }
@@ -59,20 +68,26 @@ public class MovieService {
                 .collect(Collectors.toList());
 
         if(list.isEmpty()) {
-            throw new ObjectNotFoundExceptions("no movies found");
+            throw new ObjectNotFoundExceptions(
+                    messageSource.getMessage("movie.service.error.emptyList", null, LocaleContextHolder.getLocale())
+            );
         }
         return list;
     }
 
     public Movies findById(Long id){
         return movieRepository.findById(id).orElseThrow(
-                () -> new ObjectNotFoundExceptions("this movie is not found")
+                () -> new ObjectNotFoundExceptions(
+                        messageSource.getMessage("movie.service.error.notFound", null, LocaleContextHolder.getLocale())
+                )
         );
     }
 
     public MovieResponseDto findMovieById(Long id){
         return MovieResponseDto.of(movieRepository.findById(id).orElseThrow(
-                () -> new ObjectNotFoundExceptions("this movie is not found")
+                () -> new ObjectNotFoundExceptions(
+                        messageSource.getMessage("movie.service.error.notFound", null, LocaleContextHolder.getLocale())
+                )
         ));
     }
 
@@ -83,7 +98,9 @@ public class MovieService {
                 .map(MovieResponseDto::of)
                 .toList();
         if(list.isEmpty()) {
-            throw new ObjectNotFoundExceptions("no movies found");
+            throw new ObjectNotFoundExceptions(
+                    messageSource.getMessage("movie.service.error.emptyList", null, LocaleContextHolder.getLocale())
+            );
         }
         return list;
     }
@@ -96,7 +113,9 @@ public class MovieService {
                 .toList();
 
         if(randomMovies.isEmpty()){
-            throw new ObjectNotFoundExceptions("no movies found");
+            throw new ObjectNotFoundExceptions(
+                    messageSource.getMessage("movie.service.error.emptyList", null, LocaleContextHolder.getLocale())
+            );
         }
         return randomMovies;
 

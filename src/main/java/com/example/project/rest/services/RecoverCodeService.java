@@ -9,6 +9,8 @@ import com.example.project.rest.services.exceptions.CustomException;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -32,6 +34,7 @@ public class RecoverCodeService {
     private final UsersRepository usersRepository;
     private final RabbitMQService rabbitMQService;
     private final JwtService jwtService;
+    private final MessageSource messageSource;
 
     @Transactional
     public String generateRecoverCode(Users user){
@@ -106,7 +109,10 @@ public class RecoverCodeService {
             return email;
 
         } catch(IOException e){
-            throw new CustomException("something went wrong with sending the email");
+
+            throw new CustomException(
+                    messageSource.getMessage("recoverCode.service.error", null, LocaleContextHolder.getLocale())
+            );
         }
     }
 }

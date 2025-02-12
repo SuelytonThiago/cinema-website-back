@@ -11,9 +11,9 @@ import lombok.NoArgsConstructor;
 @Data
 public class AddCategoryToMovieRequestDto {
 
-    @NotNull(message = "this movieId cannot be null")
+    @NotNull(message = "{category.dto.request.id}")
     private Long movieId;
 
-    @NotBlank(message = "this movie name cannot be empty or null")
+    @NotBlank(message = "{category.dto.request.name}")
     private String categoryName;
 }

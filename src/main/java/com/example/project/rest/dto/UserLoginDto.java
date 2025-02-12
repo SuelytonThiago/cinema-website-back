@@ -1,5 +1,6 @@
 package com.example.project.rest.dto;
 
+import com.example.project.rest.services.validations.Password;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -11,10 +12,10 @@ import lombok.NoArgsConstructor;
 @Data
 public class UserLoginDto {
 
-    @NotBlank(message = "this email cannot be empty or null")
-    @Email(message = "insert a valid email")
+    @NotBlank(message = "{email.dto.request.invalid}")
+    @Email(message = "{user.dto.request.email}")
     private String email;
 
-    @NotBlank(message = "this password cannot be empty or null")
+    @Password(message = "{password.dto.request.invalid}")
     private String password;
 }

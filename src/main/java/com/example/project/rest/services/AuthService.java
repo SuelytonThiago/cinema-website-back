@@ -7,6 +7,8 @@ import com.example.project.rest.services.exceptions.CustomException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,6 +26,7 @@ public class AuthService {
     private final UsersService userService;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
+    private final MessageSource messageSource;
 
     public Map<String,String> generateTokens(UserLoginDto dto){
         try{
@@ -40,7 +43,7 @@ public class AuthService {
             tokens.put("refreshToken", refreshToken);
             return tokens;
         } catch (BadCredentialsException e){
-            throw  new CustomException("the email or password is invalid");
+            throw  new CustomException("{auth.service.error}");
         }
     }
 
@@ -53,8 +56,7 @@ public class AuthService {
         if(jwtService.isTokenValid(token,user)){
             return jwtService.generateAccessToken(user);
         }
-
-        throw new CustomException("invalid Token");
+        throw new CustomException(messageSource.getMessage("auth.service.token.error", null, LocaleContextHolder.getLocale()));
     }
 
 

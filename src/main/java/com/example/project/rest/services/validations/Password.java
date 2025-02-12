@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
 @Constraint(validatedBy = PasswordValidator.class)
 public @interface Password {
 
-    String message() default "The password must contain at least 8 characters: a-A, 0-9";
+    String message() default "{password.dto.request.invalid}";
 
     Class<?>[] groups() default {};
 

@@ -9,10 +9,11 @@ import com.example.project.rest.services.exceptions.AlreadyExistsExceptions;
 import com.example.project.rest.services.exceptions.CustomException;
 import com.example.project.rest.services.exceptions.NotAuthenticatedException;
 import com.example.project.rest.services.exceptions.ObjectNotFoundExceptions;
-import com.example.project.rest.services.validations.Password;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -27,10 +28,13 @@ public class UsersService implements UserDetailsService {
     private final JwtService jwtService;
     private final PasswordEncoder encoder;
     private final RoleService roleService;
+    private final MessageSource messageSource;
 
     public void findFirstUserByEmailOrCpf(String email,String cpf){
         usersRepository.findFirstByEmailOrCpf(email,cpf).ifPresent( e -> {
-            throw new AlreadyExistsExceptions("This email or cpf already in use");
+            throw new AlreadyExistsExceptions(
+                    messageSource.getMessage("user.service.error.alreadyInUse", null, LocaleContextHolder.getLocale())
+            );
         });
     }
 
@@ -46,13 +50,18 @@ public class UsersService implements UserDetailsService {
 
     public Users findByEmail(String email){
         return usersRepository.findByEmail(email).orElseThrow(
-                () -> new ObjectNotFoundExceptions("The user is not found")
+
+                () -> new ObjectNotFoundExceptions(
+                        messageSource.getMessage("user.service.error.notFound", null, LocaleContextHolder.getLocale())
+                )
         );
     }
 
     public Users findById(Long id){
         return usersRepository.findById(id).orElseThrow(
-                () -> new ObjectNotFoundExceptions("The user is not found")
+                () -> new ObjectNotFoundExceptions(
+                        messageSource.getMessage("user.service.error.notFound", null, LocaleContextHolder.getLocale())
+                )
         );
     }
 
@@ -65,7 +74,10 @@ public class UsersService implements UserDetailsService {
     @Transactional
     public void updateUserData(UserUpdateRequestDto dto, Users user, String password){
         if(!verifyPasswordToChangeUserData(password, user)){
-            throw new CustomException("incorrect password");
+
+            throw new CustomException(
+                    messageSource.getMessage("user.service.error.incorrectPassword", null, LocaleContextHolder.getLocale())
+            );
         }
         updateData(dto,user);
         usersRepository.save(user);
@@ -78,7 +90,10 @@ public class UsersService implements UserDetailsService {
             var email = jwtService.getSubject(token);
             return findByEmail(email);
         } else {
-            throw new NotAuthenticatedException("User is not authenticated");
+
+            throw new NotAuthenticatedException(
+                    messageSource.getMessage("user.service.error.notAuthenticated", null, LocaleContextHolder.getLocale())
+            );
         }
     }
 
@@ -89,7 +104,9 @@ public class UsersService implements UserDetailsService {
 
     public void createNewPassword(String oldPassword, String newPassword, Users user){
         if(!verifyPasswordToChangeUserData(oldPassword,user)){
-            throw new CustomException("incorrect password");
+            throw new CustomException(
+                    messageSource.getMessage("user.service.error.incorrectPassword", null, LocaleContextHolder.getLocale())
+            );
         }
         user.setPassword(encoder.encode(newPassword));
         usersRepository.save(user);
@@ -110,6 +127,8 @@ public class UsersService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return usersRepository.findByEmail(username)
-                .orElseThrow(() -> new ObjectNotFoundExceptions("The user is not found"));
+                .orElseThrow(() -> new ObjectNotFoundExceptions(
+                        messageSource.getMessage("user.service.error.notFound", null, LocaleContextHolder.getLocale())
+                ));
     }
 }

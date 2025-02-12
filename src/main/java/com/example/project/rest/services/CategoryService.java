@@ -6,6 +6,8 @@ import com.example.project.rest.dto.CategoryRequestDto;
 import com.example.project.rest.services.exceptions.CustomException;
 import com.example.project.rest.services.exceptions.ObjectNotFoundExceptions;
 import lombok.AllArgsConstructor;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,6 +17,7 @@ import java.util.List;
 public class CategoryService {
 
     private final CategoryRepository repository;
+    private final MessageSource messageSource;
 
     public void addNewCategory(CategoryRequestDto dto){
         verifyIfExist(dto.getName());
@@ -23,24 +26,31 @@ public class CategoryService {
 
     public Categories findByName(String name){
         return repository.findByName(name).orElseThrow(
-                () -> new ObjectNotFoundExceptions("this category is not found"));
+                () -> new ObjectNotFoundExceptions(
+                        messageSource.getMessage("category.service.error.notFound", null, LocaleContextHolder.getLocale())
+                ));
     }
 
     public List<Categories> findAllCategories(){
         var list =  repository.findAll();
         if(list.isEmpty()) {
-            throw new ObjectNotFoundExceptions("no categories found");
+            throw new ObjectNotFoundExceptions(
+                    messageSource.getMessage("category.service.error.emptyList", null, LocaleContextHolder.getLocale()));
         }
         return list;
     }
 
     public Categories findById(Long id){
-        return repository.findById(id).orElseThrow(() -> new ObjectNotFoundExceptions("this category is not found"));
+        return repository.findById(id).orElseThrow(() -> new ObjectNotFoundExceptions(
+                messageSource.getMessage("category.service.error.notFound", null, LocaleContextHolder.getLocale()))
+        );
     }
 
     public void verifyIfExist(String name){
         repository.findByName(name).ifPresent((e) -> {
-            throw new CustomException("this category Already exist");
+
+            throw new CustomException(
+                    messageSource.getMessage("category.service.error.alreadyExist", null, LocaleContextHolder.getLocale()));
         });
     }
 }

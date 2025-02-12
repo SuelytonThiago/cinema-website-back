@@ -44,7 +44,7 @@ public class SessionResponseDto{
 
     private static String obtainSessionDuration(Sessions sessions){
         if (sessions.getDateStart() == null || sessions.getDateEnd() == null) {
-            throw new CustomException("Something went wrong");
+            throw new CustomException("{session.dto.response.error}");
         }
         Duration durationTime = Duration.between(sessions.getDateStart(), sessions.getDateEnd());
         long totalSeconds = durationTime.getSeconds();
