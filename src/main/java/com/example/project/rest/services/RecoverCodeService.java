@@ -54,16 +54,24 @@ public class RecoverCodeService {
     }
 
     public String validateCode(String codeValue, String email){
+
+
         var user = usersRepository.findByEmail(email).orElseThrow(
-                () -> new CustomException("invalid code!")
+                () -> new CustomException(
+                        messageSource.getMessage("recover.code.error.invalid", null, LocaleContextHolder.getLocale())
+                )
         );
 
         var code = recoverCodeRepository.findByCodeAndUser(codeValue, user).orElseThrow(
-                () -> new CustomException("invalid code!")
+                () -> new CustomException(
+                        messageSource.getMessage("recover.code.error.invalid", null, LocaleContextHolder.getLocale())
+                )
         );
 
         if(!code.isValid()){
-            throw new CustomException("expired code!");
+            throw new CustomException(
+                    messageSource.getMessage("recover.code.error.expired", null, LocaleContextHolder.getLocale())
+            );
         }
 
         return jwtService.generateAccessToken(user);

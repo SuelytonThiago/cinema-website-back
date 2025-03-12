@@ -43,7 +43,7 @@ public class AuthService {
             tokens.put("refreshToken", refreshToken);
             return tokens;
         } catch (BadCredentialsException e){
-            throw  new CustomException("{auth.service.error}");
+            throw  new CustomException(messageSource.getMessage("auth.service.error", null, LocaleContextHolder.getLocale()));
         }
     }
 

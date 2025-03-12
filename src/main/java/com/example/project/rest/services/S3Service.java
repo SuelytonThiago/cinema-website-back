@@ -46,7 +46,9 @@ public class S3Service {
     @Transactional
     public String uploadFileUserImg(MultipartFile file, Users user) {
         if(file.isEmpty()){
-            throw new CustomException("select some image");
+            throw new CustomException(
+                    messageSource.getMessage("s3.service.error.selectImg", null, LocaleContextHolder.getLocale())
+            );
         }
         try{
             if(!isImage(file)){
