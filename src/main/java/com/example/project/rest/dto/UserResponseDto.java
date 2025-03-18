@@ -5,6 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
@@ -17,6 +20,7 @@ public class UserResponseDto {
     private String contactNumber;
     private String password;
     private String profileImg;
+    private List<RoleResponseDto> roles = new ArrayList<>();
 
     public static UserResponseDto of(Users user) {
         var response = new UserResponseDto();
@@ -26,6 +30,7 @@ public class UserResponseDto {
         response.setEmail(user.getEmail());
         response.setContactNumber(user.getContactNumber());
         response.setProfileImg(user.getProfileImg());
+        response.roles.addAll(user.getRoles().stream().map(RoleResponseDto::of).toList());
         return response;
     }
 }

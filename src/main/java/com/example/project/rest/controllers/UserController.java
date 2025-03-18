@@ -1,5 +1,6 @@
 package com.example.project.rest.controllers;
 
+import com.example.project.domain.entities.Users;
 import com.example.project.rest.dto.UserRequestDto;
 import com.example.project.rest.dto.UserResponseDto;
 import com.example.project.rest.dto.UserUpdateRequestDto;

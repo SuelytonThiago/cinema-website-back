@@ -5,6 +5,7 @@ import com.example.project.rest.dto.CategoryRequestDto;
 import com.example.project.rest.services.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,8 +25,9 @@ public class CategoryController {
 
     @PostMapping("/add")
     @Operation(summary = "add a new category")
-    public ResponseEntity<Void> addNewCategory(@RequestBody @Valid CategoryRequestDto dto){
-        service.addNewCategory(dto);
+    public ResponseEntity<Void> addNewCategory(@RequestBody @Valid CategoryRequestDto dto, HttpServletRequest request){
+
+        service.addNewCategory(dto,request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 

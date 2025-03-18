@@ -5,12 +5,14 @@ import com.example.project.domain.repositories.CategoryRepository;
 import com.example.project.rest.dto.CategoryRequestDto;
 import com.example.project.rest.services.exceptions.CustomException;
 import com.example.project.rest.services.exceptions.ObjectNotFoundExceptions;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -18,8 +20,15 @@ public class CategoryService {
 
     private final CategoryRepository repository;
     private final MessageSource messageSource;
+    private final UsersService usersService;
 
-    public void addNewCategory(CategoryRequestDto dto){
+    public void addNewCategory(CategoryRequestDto dto, HttpServletRequest request){
+        var user = usersService.findUserById(request);
+        if(user.getRoles().stream().noneMatch(role -> "ROLE_ADMIN".equals(role.getNameRole()))){
+            throw new CustomException(
+                    messageSource.getMessage("category.service.error.unauthorized", null, LocaleContextHolder.getLocale())
+            );
+        }
         verifyIfExist(dto.getName());
         repository.save(new Categories(dto.getName()));
     }
