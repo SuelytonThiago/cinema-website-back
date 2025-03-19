@@ -7,12 +7,14 @@ import com.example.project.rest.dto.MovieRequestDto;
 import com.example.project.rest.dto.MovieResponseDto;
 import com.example.project.rest.services.exceptions.CustomException;
 import com.example.project.rest.services.exceptions.ObjectNotFoundExceptions;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -27,13 +29,31 @@ public class MovieService {
     private final CategoryService categoryService;
     private final MovieRepository movieRepository;
     private final MessageSource messageSource;
+    private final UsersService usersService;
+    private final S3Service s3Service;
 
-    public void createMovie(MovieRequestDto dto){
-        movieRepository.save(Movies.of(dto));
+    public void createMovie(MultipartFile file, MovieRequestDto dto,HttpServletRequest request){
+
+        var user = usersService.findUserById(request);
+        if(user.getRoles().stream().noneMatch(role -> "ROLE_ADMIN".equals(role.getNameRole()))){
+            throw new CustomException(
+                    messageSource.getMessage("category.service.error.unauthorized", null, LocaleContextHolder.getLocale())
+            );
+        }
+
+        var movie = movieRepository.save(Movies.of(dto));
+
+        s3Service.uploadFileMovieImg(file, movie);
     }
 
     @Transactional
-    public void addCategoryToMovie(AddCategoryToMovieRequestDto dto){
+    public void addCategoryToMovie(AddCategoryToMovieRequestDto dto, HttpServletRequest request){
+        var user = usersService.findUserById(request);
+        if(user.getRoles().stream().noneMatch(role -> "ROLE_ADMIN".equals(role.getNameRole()))){
+            throw new CustomException(
+                    messageSource.getMessage("category.service.error.unauthorized", null, LocaleContextHolder.getLocale())
+            );
+        }
         var category = categoryService.findByName(dto.getCategoryName());
         var movie = findById(dto.getMovieId());
         if(movie.getCategories().contains(category)){

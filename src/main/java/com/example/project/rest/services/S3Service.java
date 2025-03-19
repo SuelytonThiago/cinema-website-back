@@ -1,5 +1,7 @@
 package com.example.project.rest.services;
+import com.example.project.domain.entities.Movies;
 import com.example.project.domain.entities.Users;
+import com.example.project.domain.repositories.MovieRepository;
 import com.example.project.domain.repositories.UsersRepository;
 import com.example.project.rest.services.exceptions.CustomException;
 import jakarta.transaction.Transactional;
@@ -40,6 +42,9 @@ public class S3Service {
     private UsersRepository usersRepository;
 
     @Autowired
+    private MovieRepository movieRepository;
+
+    @Autowired
     private MessageSource messageSource;
 
 
@@ -72,6 +77,48 @@ public class S3Service {
             user.setProfileImg(url);
             usersRepository.save(user);
             return user.getProfileImg();
+        }
+        catch (IOException e){
+
+            throw new CustomException(
+                    messageSource.getMessage("s3.service.error.sendingImg", null, LocaleContextHolder.getLocale())+ e.getMessage());
+        }
+        catch (MaxUploadSizeExceededException e){
+            throw new CustomException(
+                    messageSource.getMessage("s3.service.error.maxUpload", null, LocaleContextHolder.getLocale())
+            );
+        }
+    }
+
+    @Transactional
+    public String uploadFileMovieImg(MultipartFile file, Movies movie) {
+        if(file.isEmpty()){
+            throw new CustomException(
+                    messageSource.getMessage("s3.service.error.selectImg", null, LocaleContextHolder.getLocale())
+            );
+        }
+        try{
+            if(!isImage(file)){
+
+                throw new CustomException(
+                        messageSource.getMessage("s3.service.error.invalidImg", null, LocaleContextHolder.getLocale())
+                );
+            }
+            String fileName = UUID.randomUUID() + file.getOriginalFilename();
+
+            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(fileName)
+                    .contentType(file.getContentType())
+                    .build();
+
+            s3Client.putObject(putObjectRequest,
+                    software.amazon.awssdk.core.sync.RequestBody.fromBytes(file.getBytes()));
+
+            var url =  "https://" + bucketName + ".s3.amazonaws.com/" + fileName;
+            movie.setImageUrl(url);
+            movieRepository.save(movie);
+            return movie.getImageUrl();
         }
         catch (IOException e){
 

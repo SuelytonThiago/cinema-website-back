@@ -25,7 +25,4 @@ public class MovieRequestDto implements Serializable {
     @NotBlank(message = "{movie.dto.request.classification}")
     private String classification;
 
-    @NotBlank(message = "{movie.dto.request.imageUrl}")
-    private String imageUrl;
-
 }
