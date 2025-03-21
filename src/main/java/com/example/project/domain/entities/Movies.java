@@ -46,6 +46,7 @@ public class Movies implements Serializable {
         movie.setName(dto.getName());
         movie.setDescription(dto.getDescription());
         movie.setReleaseData(LocalDate.parse(dto.getReleaseData(), formatter));
+        movie.setClassification(dto.getClassification());
         return movie;
     }
 

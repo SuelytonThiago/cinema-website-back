@@ -2,6 +2,7 @@ package com.example.project.rest.controllers;
 
 import com.example.project.domain.entities.Categories;
 import com.example.project.rest.dto.CategoryRequestDto;
+import com.example.project.rest.dto.CategoryResponseDto;
 import com.example.project.rest.services.CategoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -35,5 +36,11 @@ public class CategoryController {
     @Operation(summary = "search all categories")
     public ResponseEntity<List<Categories>> findAll(){
         return ResponseEntity.ok(service.findAllCategories());
+    }
+
+    @GetMapping("/search")
+    @Operation(summary = "search all categories by name")
+    public ResponseEntity<List<CategoryResponseDto>> findLikeName(@RequestParam String name){
+        return ResponseEntity.ok(service.findLikeName(name));
     }
 }

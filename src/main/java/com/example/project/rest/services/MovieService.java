@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,17 +34,23 @@ public class MovieService {
     private final S3Service s3Service;
 
     public void createMovie(MultipartFile file, MovieRequestDto dto,HttpServletRequest request){
+        try{
+            var user = usersService.findUserById(request);
+            if(user.getRoles().stream().noneMatch(role -> "ROLE_ADMIN".equals(role.getNameRole()))){
+                throw new CustomException(
+                        messageSource.getMessage("server.error.unauthorized", null, LocaleContextHolder.getLocale())
+                );
+            }
 
-        var user = usersService.findUserById(request);
-        if(user.getRoles().stream().noneMatch(role -> "ROLE_ADMIN".equals(role.getNameRole()))){
+            var movie = movieRepository.save(Movies.of(dto));
+
+            s3Service.uploadFileMovieImg(file, movie);
+        } catch(DateTimeParseException e) {
             throw new CustomException(
-                    messageSource.getMessage("category.service.error.unauthorized", null, LocaleContextHolder.getLocale())
+                    messageSource.getMessage("format.data.error", null, LocaleContextHolder.getLocale())
             );
         }
 
-        var movie = movieRepository.save(Movies.of(dto));
-
-        s3Service.uploadFileMovieImg(file, movie);
     }
 
     @Transactional
@@ -51,7 +58,7 @@ public class MovieService {
         var user = usersService.findUserById(request);
         if(user.getRoles().stream().noneMatch(role -> "ROLE_ADMIN".equals(role.getNameRole()))){
             throw new CustomException(
-                    messageSource.getMessage("category.service.error.unauthorized", null, LocaleContextHolder.getLocale())
+                    messageSource.getMessage("server.error.unauthorized", null, LocaleContextHolder.getLocale())
             );
         }
         var category = categoryService.findByName(dto.getCategoryName());

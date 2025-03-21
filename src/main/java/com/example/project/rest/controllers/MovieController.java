@@ -71,6 +71,12 @@ public class MovieController {
         return ResponseEntity.ok(movieService.findAll());
     }
 
+    @GetMapping("/search")
+    @Operation(summary = "search movie by name")
+    public ResponseEntity<List<MovieResponseDto>> search(@RequestParam String name){
+        return ResponseEntity.ok(movieService.findMovieByName(name));
+    }
+
     @GetMapping("/{id}")
     @Operation(summary = "search movie by id")
     public ResponseEntity<MovieResponseDto> findMovieById(@PathVariable Long id) {

@@ -3,6 +3,7 @@ package com.example.project.rest.services;
 import com.example.project.domain.entities.Categories;
 import com.example.project.domain.repositories.CategoryRepository;
 import com.example.project.rest.dto.CategoryRequestDto;
+import com.example.project.rest.dto.CategoryResponseDto;
 import com.example.project.rest.services.exceptions.CustomException;
 import com.example.project.rest.services.exceptions.ObjectNotFoundExceptions;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,7 +27,7 @@ public class CategoryService {
         var user = usersService.findUserById(request);
         if(user.getRoles().stream().noneMatch(role -> "ROLE_ADMIN".equals(role.getNameRole()))){
             throw new CustomException(
-                    messageSource.getMessage("category.service.error.unauthorized", null, LocaleContextHolder.getLocale())
+                    messageSource.getMessage("server.error.unauthorized", null, LocaleContextHolder.getLocale())
             );
         }
         verifyIfExist(dto.getName());
@@ -39,6 +40,22 @@ public class CategoryService {
                         messageSource.getMessage("category.service.error.notFound", null, LocaleContextHolder.getLocale())
                 ));
     }
+
+    public List<CategoryResponseDto> findLikeName(String name) {
+        List<CategoryResponseDto> categories = repository.findByNameLike(name)
+                .stream()
+                .map(CategoryResponseDto::of)
+                .toList();
+
+        if (categories.isEmpty()) {
+            throw new ObjectNotFoundExceptions(
+                    messageSource.getMessage("category.findLike.service.error.notFound", null, LocaleContextHolder.getLocale())
+            );
+        }
+
+        return categories;
+    }
+
 
     public List<Categories> findAllCategories(){
         var list =  repository.findAll();
