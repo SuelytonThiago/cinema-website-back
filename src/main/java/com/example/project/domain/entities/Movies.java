@@ -29,7 +29,7 @@ public class Movies implements Serializable {
     private String description;
     private LocalDate releaseData;
     private String classification;
-
+    private String backgroundCover;
     private String imageUrl;
 
     @ManyToMany

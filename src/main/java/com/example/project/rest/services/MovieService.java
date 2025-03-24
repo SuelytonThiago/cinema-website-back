@@ -1,5 +1,6 @@
 package com.example.project.rest.services;
 
+import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.example.project.domain.entities.Movies;
 import com.example.project.domain.repositories.MovieRepository;
 import com.example.project.rest.dto.AddCategoryToMovieRequestDto;
@@ -12,7 +13,6 @@ import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -33,18 +33,18 @@ public class MovieService {
     private final UsersService usersService;
     private final S3Service s3Service;
 
-    public void createMovie(MultipartFile file, MovieRequestDto dto,HttpServletRequest request){
+    @Transactional
+    public void createMovie(MultipartFile ImgFile,MultipartFile backgroundCover, MovieRequestDto dto,HttpServletRequest request){
         try{
-            var user = usersService.findUserById(request);
-            if(user.getRoles().stream().noneMatch(role -> "ROLE_ADMIN".equals(role.getNameRole()))){
-                throw new CustomException(
-                        messageSource.getMessage("server.error.unauthorized", null, LocaleContextHolder.getLocale())
-                );
-            }
-
+            usersService.checkIfIsADM(request);
             var movie = movieRepository.save(Movies.of(dto));
 
-            s3Service.uploadFileMovieImg(file, movie);
+            var imgUrl = s3Service.uploadFileImg(ImgFile);
+            var backgroundImg = s3Service.uploadFileImg(backgroundCover);
+            movie.setBackgroundCover(backgroundImg);
+            movie.setImageUrl(imgUrl);
+            movieRepository.save(movie);
+
         } catch(DateTimeParseException e) {
             throw new CustomException(
                     messageSource.getMessage("format.data.error", null, LocaleContextHolder.getLocale())
@@ -55,12 +55,7 @@ public class MovieService {
 
     @Transactional
     public void addCategoryToMovie(AddCategoryToMovieRequestDto dto, HttpServletRequest request){
-        var user = usersService.findUserById(request);
-        if(user.getRoles().stream().noneMatch(role -> "ROLE_ADMIN".equals(role.getNameRole()))){
-            throw new CustomException(
-                    messageSource.getMessage("server.error.unauthorized", null, LocaleContextHolder.getLocale())
-            );
-        }
+        usersService.checkIfIsADM(request);
         var category = categoryService.findByName(dto.getCategoryName());
         var movie = findById(dto.getMovieId());
         if(movie.getCategories().contains(category)){
@@ -87,6 +82,7 @@ public class MovieService {
         }
         return list;
     }
+
 
     public List<MovieResponseDto> findAll(){
         var list = movieRepository.findAll()
@@ -118,6 +114,7 @@ public class MovieService {
         ));
     }
 
+    @Transactional
     public List<MovieResponseDto> findAllByCategory(Long id){
         var category = categoryService.findById(id);
         var list =  movieRepository.findByCategories(category)
@@ -132,6 +129,7 @@ public class MovieService {
         return list;
     }
 
+    @Transactional
     public List<MovieResponseDto> getRandomMovies() {
         var randomIds = movieRepository.findRandomMovieIds(10);
         var randomMovies = movieRepository.findMoviesByIds(randomIds)
@@ -149,14 +147,16 @@ public class MovieService {
     }
 
     @Transactional
-    public void updateMovieData(Long id,MovieRequestDto dto){
+    public void updateMovieData(Long id,MovieRequestDto dto, HttpServletRequest request){
+        usersService.checkIfIsADM(request);
         var movie = findById(id);
         updateData(dto, movie);
         movieRepository.save(movie);
     }
 
     @Transactional
-    public void deleteMovie(Long id){
+    public void deleteMovie(Long id, HttpServletRequest request){
+        usersService.checkIfIsADM(request);
         var movie = findById(id);
         movieRepository.delete(movie);
     }

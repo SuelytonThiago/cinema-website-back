@@ -7,6 +7,7 @@ import com.example.project.rest.dto.SessionResponseDto;
 import com.example.project.rest.services.SessionsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,8 +30,8 @@ public class SessionController {
 
     @PostMapping("/add")
     @Operation(summary = "add a new session")
-    public ResponseEntity<Void> addSession(@RequestBody @Valid SessionRequestDto dto){
-        var response = sessionsService.createSession(dto);
+    public ResponseEntity<Void> addSession(@RequestBody @Valid SessionRequestDto dto, HttpServletRequest request){
+        var response = sessionsService.createSession(dto, request);
 
         messagingTemplate.convertAndSend("/topic/sessions", response);
         return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -57,8 +58,9 @@ public class SessionController {
     @PatchMapping("/update/{id}")
     @Operation(summary = "update sessions")
     public ResponseEntity<Void> updateData(@PathVariable @Valid SessionRequestDto dto,
-                                           @PathVariable Long id){
-        sessionsService.updateSession(id,dto);
+                                           @PathVariable Long id,
+                                           HttpServletRequest request){
+        sessionsService.updateSession(id,dto, request);
         return ResponseEntity.noContent().build();
     }
 

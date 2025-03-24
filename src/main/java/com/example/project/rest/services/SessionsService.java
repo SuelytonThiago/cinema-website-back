@@ -2,11 +2,11 @@ package com.example.project.rest.services;
 
 import com.example.project.domain.entities.Sessions;
 import com.example.project.domain.repositories.SessionsRepository;
-import com.example.project.rest.dto.ChairResponseDto;
 import com.example.project.rest.dto.SessionRequestDto;
 import com.example.project.rest.dto.SessionResponseDto;
 import com.example.project.rest.services.exceptions.CustomException;
 import com.example.project.rest.services.exceptions.ObjectNotFoundExceptions;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.context.MessageSource;
@@ -25,6 +25,7 @@ public class SessionsService {
     private final SessionsRepository sessionsRepository;
     private final MovieService movieService;
     private final MessageSource messageSource;
+    private final UsersService usersService;
 
     public void saveSession(Sessions sessions){
         sessionsRepository.save(sessions);
@@ -54,7 +55,8 @@ public class SessionsService {
     }
 
     @Transactional
-    public SessionResponseDto createSession(SessionRequestDto dto){
+    public SessionResponseDto createSession(SessionRequestDto dto, HttpServletRequest request){
+        usersService.checkIfIsADM(request);
         try {
             var movie = movieService.findById(dto.getMovieId());
             var session = sessionsRepository.save(Sessions.of(dto,movie));
@@ -91,7 +93,8 @@ public class SessionsService {
     }
 
     @Transactional
-    public void updateSession(Long id,SessionRequestDto dto){
+    public void updateSession(Long id,SessionRequestDto dto,HttpServletRequest request){
+        usersService.checkIfIsADM(request);
         var session  = findById(id);
         updateData(session,dto);
         sessionsRepository.save(session);

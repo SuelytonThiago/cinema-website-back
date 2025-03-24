@@ -19,6 +19,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @AllArgsConstructor
@@ -29,6 +30,7 @@ public class UsersService implements UserDetailsService {
     private final PasswordEncoder encoder;
     private final RoleService roleService;
     private final MessageSource messageSource;
+    public final S3Service s3Service;
 
     public void findFirstUserByEmailOrCpf(String email,String cpf){
         usersRepository.findFirstByEmailOrCpf(email,cpf).ifPresent( e -> {
@@ -65,6 +67,13 @@ public class UsersService implements UserDetailsService {
         );
     }
 
+    public String uploadUserFile(MultipartFile file,HttpServletRequest request) {
+        var user = getUserAuthenticated(request.getHeader("Authorization"));
+        var url = s3Service.uploadFileImg(file);
+        user.setProfileImg(url);
+        return url;
+    }
+
     public UserResponseDto findUserById(HttpServletRequest request){
         var id = jwtService.getClaimId(request);
         return UserResponseDto.of(findById(id));
@@ -73,7 +82,7 @@ public class UsersService implements UserDetailsService {
 
     @Transactional
     public void updateUserData(UserUpdateRequestDto dto, Users user, String password){
-        if(!verifyPasswordToChangeUserData(password, user)){
+        if(verifyPasswordToChangeUserData(password, user)){
 
             throw new CustomException(
                     messageSource.getMessage("user.service.error.incorrectPassword", null, LocaleContextHolder.getLocale())
@@ -90,7 +99,6 @@ public class UsersService implements UserDetailsService {
             var email = jwtService.getSubject(token);
             return findByEmail(email);
         } else {
-
             throw new NotAuthenticatedException(
                     messageSource.getMessage("user.service.error.notAuthenticated", null, LocaleContextHolder.getLocale())
             );
@@ -103,7 +111,7 @@ public class UsersService implements UserDetailsService {
     }
 
     public void createNewPassword(String oldPassword, String newPassword, Users user){
-        if(!verifyPasswordToChangeUserData(oldPassword,user)){
+        if(verifyPasswordToChangeUserData(oldPassword, user)){
             throw new CustomException(
                     messageSource.getMessage("user.service.error.incorrectPassword", null, LocaleContextHolder.getLocale())
             );
@@ -113,9 +121,18 @@ public class UsersService implements UserDetailsService {
 
     }
 
+    public void checkIfIsADM(HttpServletRequest request){
+        var user = findUserById(request);
+        if(user.getRoles().stream().noneMatch(role -> "ROLE_ADMIN".equals(role.getNameRole()))){
+            throw new CustomException(
+                    messageSource.getMessage("server.error.unauthorized", null, LocaleContextHolder.getLocale())
+            );
+        }
+    }
+
 
     private boolean verifyPasswordToChangeUserData(String password, Users user){
-        return encoder.matches(password, user.getPassword());
+        return !encoder.matches(password, user.getPassword());
     }
 
     private void updateData(UserUpdateRequestDto dto, Users newUser){

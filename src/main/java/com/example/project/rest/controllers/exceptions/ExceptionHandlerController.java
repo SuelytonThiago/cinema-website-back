@@ -56,7 +56,7 @@ public class ExceptionHandlerController {
 
     @ExceptionHandler(NotAuthenticatedException.class)
     public ProblemDetail notAuthorized(NotAuthenticatedException e){
-        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.FORBIDDEN);
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.UNAUTHORIZED);
         problemDetail.setProperty("TimeStamp",LocalDate.now());
         problemDetail.setProperty("Message", e.getMessage());
         return problemDetail;

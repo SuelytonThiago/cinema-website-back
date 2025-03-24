@@ -14,7 +14,6 @@ import jakarta.validation.Validator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -38,7 +37,8 @@ public class MovieController {
     @PostMapping("/add")
     @Operation(summary = "add a new movie")
     public ResponseEntity<Map<String, String>> addMovie(@RequestParam("movie") String movieJson,
-                                                        @RequestParam("file") MultipartFile file,
+                                                        @RequestParam("fileImg") MultipartFile fileImg,
+                                                        @RequestParam("backgroundCover") MultipartFile backgroundCover,
                                                         HttpServletRequest request) throws JsonProcessingException {
 
         ObjectMapper objectMapper = new ObjectMapper();
@@ -54,7 +54,7 @@ public class MovieController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
         }
 
-        movieService.createMovie(file, dto, request);
+        movieService.createMovie(fileImg,backgroundCover, dto, request);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
@@ -97,15 +97,17 @@ public class MovieController {
 
     @PutMapping("/update/{id}")
     @Operation(summary = "update movie data")
-    public ResponseEntity<Void> updateMovie(@RequestBody @Valid MovieRequestDto dto,@PathVariable Long id){
-        movieService.updateMovieData(id,dto);
+    public ResponseEntity<Void> updateMovie(@RequestBody @Valid MovieRequestDto dto,
+                                            @PathVariable Long id,
+                                            HttpServletRequest request){
+        movieService.updateMovieData(id,dto, request);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/delete/{id}")
     @Operation(summary = "delete the movie")
-    public ResponseEntity<Void> deleteMovie(@PathVariable Long id){
-        movieService.deleteMovie(id);
+    public ResponseEntity<Void> deleteMovie(@PathVariable Long id, HttpServletRequest request){
+        movieService.deleteMovie(id, request);
         return ResponseEntity.noContent().build();
     }
 }

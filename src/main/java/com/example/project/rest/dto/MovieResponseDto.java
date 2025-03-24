@@ -27,6 +27,7 @@ public class MovieResponseDto {
     private String releaseData;
     private String imageUrl;
     private String classification;
+    private String backgroundCover;
     private List<CategoryResponseDto> categories = new ArrayList<>();
 
     private List<ReviewsResponseDto> reviews = new ArrayList<>();
@@ -42,6 +43,7 @@ public class MovieResponseDto {
         response.setImageUrl(movie.getImageUrl());
         response.setCategories(parseCategories(movie.getCategories()));
         response.setClassification(movie.getClassification());
+        response.setBackgroundCover(movie.getBackgroundCover());
         return response;
     }
 

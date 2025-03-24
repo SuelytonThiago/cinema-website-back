@@ -24,12 +24,7 @@ public class CategoryService {
     private final UsersService usersService;
 
     public void addNewCategory(CategoryRequestDto dto, HttpServletRequest request){
-        var user = usersService.findUserById(request);
-        if(user.getRoles().stream().noneMatch(role -> "ROLE_ADMIN".equals(role.getNameRole()))){
-            throw new CustomException(
-                    messageSource.getMessage("server.error.unauthorized", null, LocaleContextHolder.getLocale())
-            );
-        }
+        usersService.checkIfIsADM(request);
         verifyIfExist(dto.getName());
         repository.save(new Categories(dto.getName()));
     }

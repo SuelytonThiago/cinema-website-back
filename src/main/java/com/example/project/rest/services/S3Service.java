@@ -13,12 +13,15 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.IOException;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.UUID;
 
 @Service
@@ -39,17 +42,11 @@ public class S3Service {
     private S3Client s3Client;
 
     @Autowired
-    private UsersRepository usersRepository;
-
-    @Autowired
-    private MovieRepository movieRepository;
-
-    @Autowired
     private MessageSource messageSource;
 
 
     @Transactional
-    public String uploadFileUserImg(MultipartFile file, Users user) {
+    public String uploadFileImg(MultipartFile file) {
         if(file.isEmpty()){
             throw new CustomException(
                     messageSource.getMessage("s3.service.error.selectImg", null, LocaleContextHolder.getLocale())
@@ -73,10 +70,7 @@ public class S3Service {
             s3Client.putObject(putObjectRequest,
                     software.amazon.awssdk.core.sync.RequestBody.fromBytes(file.getBytes()));
 
-            var url =  "https://" + bucketName + ".s3.amazonaws.com/" + fileName;
-            user.setProfileImg(url);
-            usersRepository.save(user);
-            return user.getProfileImg();
+            return "https://" + bucketName + ".s3.amazonaws.com/" + fileName;
         }
         catch (IOException e){
 
@@ -90,46 +84,23 @@ public class S3Service {
         }
     }
 
-    @Transactional
-    public String uploadFileMovieImg(MultipartFile file, Movies movie) {
-        if(file.isEmpty()){
-            throw new CustomException(
-                    messageSource.getMessage("s3.service.error.selectImg", null, LocaleContextHolder.getLocale())
-            );
-        }
-        try{
-            if(!isImage(file)){
+    public String updateMovieImgFile(MultipartFile file, String fileId) throws IOException {
+        Path tempFile = Files.createTempFile(null, null);
+        file.transferTo(tempFile);
 
-                throw new CustomException(
-                        messageSource.getMessage("s3.service.error.invalidImg", null, LocaleContextHolder.getLocale())
-                );
-            }
-            String fileName = UUID.randomUUID() + file.getOriginalFilename();
+        PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                .bucket(bucketName)
+                .key(fileId)
+                .build();
 
-            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
-                    .bucket(bucketName)
-                    .key(fileName)
-                    .contentType(file.getContentType())
-                    .build();
+        s3Client.putObject(putObjectRequest, RequestBody.fromFile(tempFile));
 
-            s3Client.putObject(putObjectRequest,
-                    software.amazon.awssdk.core.sync.RequestBody.fromBytes(file.getBytes()));
+        String fileName = UUID.randomUUID() + file.getOriginalFilename();
 
-            var url =  "https://" + bucketName + ".s3.amazonaws.com/" + fileName;
-            movie.setImageUrl(url);
-            movieRepository.save(movie);
-            return movie.getImageUrl();
-        }
-        catch (IOException e){
 
-            throw new CustomException(
-                    messageSource.getMessage("s3.service.error.sendingImg", null, LocaleContextHolder.getLocale())+ e.getMessage());
-        }
-        catch (MaxUploadSizeExceededException e){
-            throw new CustomException(
-                    messageSource.getMessage("s3.service.error.maxUpload", null, LocaleContextHolder.getLocale())
-            );
-        }
+        Files.delete(tempFile);
+
+        return  "https://" + bucketName + ".s3.amazonaws.com/" + fileName;
     }
 
     private boolean isImage(MultipartFile file) throws IOException {
