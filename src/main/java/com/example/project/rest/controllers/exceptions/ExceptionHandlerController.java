@@ -1,9 +1,8 @@
 package com.example.project.rest.controllers.exceptions;
 
-import com.example.project.rest.services.exceptions.AlreadyExistsExceptions;
-import com.example.project.rest.services.exceptions.CustomException;
-import com.example.project.rest.services.exceptions.NotAuthenticatedException;
-import com.example.project.rest.services.exceptions.ObjectNotFoundExceptions;
+import com.auth0.jwt.exceptions.TokenExpiredException;
+import com.example.project.rest.services.exceptions.*;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
@@ -12,6 +11,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -49,7 +49,7 @@ public class ExceptionHandlerController {
                 .map(DefaultMessageSourceResolvable::getDefaultMessage).collect(Collectors.toList());
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
         problemDetail.setProperty("TimeStamp",LocalDate.now());
-        problemDetail.setProperty("Message",err);
+        problemDetail.setProperty("Message",err.getFirst());
         return problemDetail;
 
     }
@@ -62,6 +62,14 @@ public class ExceptionHandlerController {
         return problemDetail;
     }
 
+    @ExceptionHandler(ForbiddenException.class)
+    public ProblemDetail forbidden(ForbiddenException e){
+        ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.FORBIDDEN);
+        problemDetail.setProperty("TimeStamp",LocalDate.now());
+        problemDetail.setProperty("Message", e.getMessage());
+        return problemDetail;
+    }
+
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public ProblemDetail MaxUploadSizeExceeded(MaxUploadSizeExceededException e){
         ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
@@ -69,7 +77,4 @@ public class ExceptionHandlerController {
         problemDetail.setProperty("Message", e.getMessage());
         return problemDetail;
     }
-
-
-
 }

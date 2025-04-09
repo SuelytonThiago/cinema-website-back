@@ -1,8 +1,4 @@
 package com.example.project.rest.services;
-import com.example.project.domain.entities.Movies;
-import com.example.project.domain.entities.Users;
-import com.example.project.domain.repositories.MovieRepository;
-import com.example.project.domain.repositories.UsersRepository;
 import com.example.project.rest.services.exceptions.CustomException;
 import jakarta.transaction.Transactional;
 import org.apache.tika.Tika;
@@ -13,15 +9,12 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
-import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.IOException;
-
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -59,7 +52,7 @@ public class S3Service {
                         messageSource.getMessage("s3.service.error.invalidImg", null, LocaleContextHolder.getLocale())
                 );
             }
-            String fileName = UUID.randomUUID() + file.getOriginalFilename();
+            String fileName = UUID.randomUUID() + Objects.requireNonNull(file.getOriginalFilename()).replaceAll("\\s+", "-");
 
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                     .bucket(bucketName)
@@ -70,7 +63,7 @@ public class S3Service {
             s3Client.putObject(putObjectRequest,
                     software.amazon.awssdk.core.sync.RequestBody.fromBytes(file.getBytes()));
 
-            return "https://" + bucketName + ".s3.amazonaws.com/" + fileName;
+            return "https://" + bucketName + ".s3.amazonaws.com/" + fileName.trim();
         }
         catch (IOException e){
 
@@ -82,25 +75,6 @@ public class S3Service {
                     messageSource.getMessage("s3.service.error.maxUpload", null, LocaleContextHolder.getLocale())
             );
         }
-    }
-
-    public String updateMovieImgFile(MultipartFile file, String fileId) throws IOException {
-        Path tempFile = Files.createTempFile(null, null);
-        file.transferTo(tempFile);
-
-        PutObjectRequest putObjectRequest = PutObjectRequest.builder()
-                .bucket(bucketName)
-                .key(fileId)
-                .build();
-
-        s3Client.putObject(putObjectRequest, RequestBody.fromFile(tempFile));
-
-        String fileName = UUID.randomUUID() + file.getOriginalFilename();
-
-
-        Files.delete(tempFile);
-
-        return  "https://" + bucketName + ".s3.amazonaws.com/" + fileName;
     }
 
     private boolean isImage(MultipartFile file) throws IOException {

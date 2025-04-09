@@ -69,7 +69,7 @@ public class UsersService implements UserDetailsService {
 
     public String uploadUserFile(MultipartFile file,HttpServletRequest request) {
         var user = getUserAuthenticated(request.getHeader("Authorization"));
-        var url = s3Service.uploadFileImg(file);
+        var url = s3Service.uploadFileImg(file).trim();
         user.setProfileImg(url);
         return url;
     }
@@ -124,7 +124,7 @@ public class UsersService implements UserDetailsService {
     public void checkIfIsADM(HttpServletRequest request){
         var user = findUserById(request);
         if(user.getRoles().stream().noneMatch(role -> "ROLE_ADMIN".equals(role.getNameRole()))){
-            throw new CustomException(
+            throw new NotAuthenticatedException(
                     messageSource.getMessage("server.error.unauthorized", null, LocaleContextHolder.getLocale())
             );
         }

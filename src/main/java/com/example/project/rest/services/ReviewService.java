@@ -12,6 +12,7 @@ import jakarta.validation.ConstraintViolationException;
 import lombok.AllArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -46,6 +47,10 @@ public class ReviewService {
             throw new CustomException(
                     messageSource.getMessage("review.service.error.constraintViolationException", null, LocaleContextHolder.getLocale())
             );
+        } catch(DataIntegrityViolationException e) {
+            throw new CustomException(
+                    messageSource.getMessage("review.service.error.dataIntegrity",null, LocaleContextHolder.getLocale())
+            );
         }
     }
 
@@ -70,11 +75,18 @@ public class ReviewService {
 
 
     @Transactional
-        public ReviewsResponseDto updateReview(ReviewRequestDto dto,Long id){
-        var review = findById(id);
-        updateData(dto,review);
-        var res = reviewsRepository.save(review);
-        return ReviewsResponseDto.of(res);
+    public ReviewsResponseDto updateReview(ReviewRequestDto dto,Long id){
+        try{
+            var review = findById(id);
+            updateData(dto,review);
+            var res = reviewsRepository.save(review);
+            return ReviewsResponseDto.of(res);
+
+        } catch(DataIntegrityViolationException e) {
+            throw new CustomException(
+                    messageSource.getMessage("review.service.error.dataIntegrity",null, LocaleContextHolder.getLocale())
+            );
+        }
     }
 
     @Transactional

@@ -97,10 +97,26 @@ public class MovieController {
 
     @PutMapping("/update/{id}")
     @Operation(summary = "update movie data")
-    public ResponseEntity<Void> updateMovie(@RequestBody @Valid MovieRequestDto dto,
+    public ResponseEntity<Map<String, String>> updateMovie(@RequestParam("movie") String movieJson,
+                                            @RequestParam(value = "fileImg", required = false) MultipartFile fileImg,
+                                            @RequestParam(value = "backgroundCover", required = false) MultipartFile backgroundCover,
                                             @PathVariable Long id,
-                                            HttpServletRequest request){
-        movieService.updateMovieData(id,dto, request);
+                                            HttpServletRequest request) throws JsonProcessingException {
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        MovieRequestDto dto = objectMapper.readValue(movieJson, MovieRequestDto.class);
+
+        Set<ConstraintViolation<MovieRequestDto>> violations = validator.validate(dto);
+        if (!violations.isEmpty()) {
+            Map<String, String> errors = new HashMap<>();
+            for (ConstraintViolation<MovieRequestDto> violation : violations) {
+
+                errors.put(violation.getPropertyPath().toString(), violation.getMessage());
+            }
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
+        }
+
+        movieService.updateMovieData(fileImg,backgroundCover, id,dto, request);
         return ResponseEntity.noContent().build();
     }
 

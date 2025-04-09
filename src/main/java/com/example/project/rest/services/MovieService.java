@@ -34,12 +34,12 @@ public class MovieService {
     private final S3Service s3Service;
 
     @Transactional
-    public void createMovie(MultipartFile ImgFile,MultipartFile backgroundCover, MovieRequestDto dto,HttpServletRequest request){
+    public void createMovie(MultipartFile imgFile,MultipartFile backgroundCover, MovieRequestDto dto,HttpServletRequest request){
         try{
             usersService.checkIfIsADM(request);
             var movie = movieRepository.save(Movies.of(dto));
 
-            var imgUrl = s3Service.uploadFileImg(ImgFile);
+            var imgUrl = s3Service.uploadFileImg(imgFile);
             var backgroundImg = s3Service.uploadFileImg(backgroundCover);
             movie.setBackgroundCover(backgroundImg);
             movie.setImageUrl(imgUrl);
@@ -147,11 +147,29 @@ public class MovieService {
     }
 
     @Transactional
-    public void updateMovieData(Long id,MovieRequestDto dto, HttpServletRequest request){
-        usersService.checkIfIsADM(request);
-        var movie = findById(id);
-        updateData(dto, movie);
-        movieRepository.save(movie);
+    public void updateMovieData(MultipartFile imgFile,MultipartFile backgroundCover, Long id, MovieRequestDto dto, HttpServletRequest request){
+        try {
+            usersService.checkIfIsADM(request);
+            var movie = findById(id);
+
+            if (imgFile != null && !imgFile.isEmpty()) {
+                var imgUrl = s3Service.uploadFileImg(imgFile);
+                movie.setImageUrl(imgUrl);
+            }
+
+            if (backgroundCover != null && !backgroundCover.isEmpty()) {
+                var backgroundImg = s3Service.uploadFileImg(backgroundCover);
+                movie.setBackgroundCover(backgroundImg);
+            }
+
+            updateData(dto, movie);
+            movieRepository.save(movie);
+
+        } catch(DateTimeParseException e) {
+            throw new CustomException(
+                    messageSource.getMessage("format.data.error", null, LocaleContextHolder.getLocale())
+            );
+        }
     }
 
     @Transactional
@@ -165,6 +183,7 @@ public class MovieService {
         movie.setName(dto.getName());
         movie.setDescription(dto.getDescription());
         movie.setReleaseData(LocalDate.parse(dto.getReleaseData(), formatter));
+        movie.setClassification(dto.getClassification());
     }
 
 }
