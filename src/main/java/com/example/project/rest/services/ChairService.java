@@ -32,19 +32,27 @@ public class ChairService {
 
     @Transactional
     public List<ChairResponseDto> getAllChairs(Long sessionId){
-        List<ChairResponseDto> list = new ArrayList<>();
-        var session = sessionsService.findById(sessionId);
-        for(int i=0;i<session.getChairsAvailable().length;i++){
-            var chair = new ChairResponseDto();
-            chair.setChairNumber(i + 1);
-            chair.setAvailable(session.isChairAvailable(i));
-            list.add(chair);
+
+        try {
+            List<ChairResponseDto> list = new ArrayList<>();
+            var session = sessionsService.findById(sessionId);
+            for(int i=0;i<session.getChairsAvailable().length;i++){
+                var chair = new ChairResponseDto();
+                chair.setChairNumber(i + 1);
+                chair.setAvailable(session.isChairAvailable(i));
+                list.add(chair);
+            }
+            if(list.isEmpty()) {
+                throw new ObjectNotFoundExceptions(
+                        messageSource.getMessage("chair.service.error.notRegistered", null, LocaleContextHolder.getLocale()));
+            }
+            return list;
         }
-        if(list.isEmpty()) {
+        catch (NullPointerException e) {
             throw new ObjectNotFoundExceptions(
-                    messageSource.getMessage("chair.service.error.notRegistered", null, LocaleContextHolder.getLocale()));
+                    messageSource.getMessage("session.service.error.notFound", null, LocaleContextHolder.getLocale())
+            );
         }
-        return list;
 
     }
 

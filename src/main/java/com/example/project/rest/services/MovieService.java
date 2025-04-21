@@ -64,6 +64,7 @@ public class MovieService {
                     messageSource.getMessage("movie.service.error.movieAlreadyAdded", null, LocaleContextHolder.getLocale())
             );
         }
+
         movie.getCategories().add(category);
         movieRepository.save(movie);
 

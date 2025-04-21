@@ -50,6 +50,14 @@ public class Movies implements Serializable {
         return movie;
     }
 
+    public Movies(Long id, String name, String description, LocalDate releaseData, String classification) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.releaseData = releaseData;
+        this.classification = classification;
+    }
+
     public Double getAverageRating(){
         if(reviews.isEmpty()){
             return 0.0;

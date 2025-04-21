@@ -55,13 +55,5 @@ public class SessionController {
         return ResponseEntity.ok(sessionsService.getAllSessions());
     }
 
-    @PatchMapping("/update/{id}")
-    @Operation(summary = "update sessions")
-    public ResponseEntity<Void> updateData(@PathVariable @Valid SessionRequestDto dto,
-                                           @PathVariable Long id,
-                                           HttpServletRequest request){
-        sessionsService.updateSession(id,dto, request);
-        return ResponseEntity.noContent().build();
-    }
 
 }

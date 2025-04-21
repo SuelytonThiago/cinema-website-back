@@ -51,6 +51,15 @@ public class Users implements Serializable, UserDetails {
         return user;
     }
 
+    public Users(Long id, String name, String email, String cpf, String contactNumber, String password) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.cpf = cpf;
+        this.contactNumber = contactNumber;
+        this.password = password;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

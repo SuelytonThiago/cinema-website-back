@@ -58,6 +58,7 @@ public class CategoryService {
             throw new ObjectNotFoundExceptions(
                     messageSource.getMessage("category.service.error.emptyList", null, LocaleContextHolder.getLocale()));
         }
+
         return list;
     }
 

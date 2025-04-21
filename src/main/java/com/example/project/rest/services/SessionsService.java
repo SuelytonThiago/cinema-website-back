@@ -91,22 +91,4 @@ public class SessionsService {
         }
         return list;
     }
-
-    @Transactional
-    public void updateSession(Long id,SessionRequestDto dto,HttpServletRequest request){
-        usersService.checkIfIsADM(request);
-        var session  = findById(id);
-        updateData(session,dto);
-        sessionsRepository.save(session);
-    }
-
-    private void updateData(Sessions sessions, SessionRequestDto dto){
-        sessions.setName(dto.getName());
-        sessions.setDateStart(Sessions.convertStringToLocalDateTime(dto.getDateStart()));
-        sessions.setDateEnd(Sessions.convertStringToLocalDateTime(dto.getDateEnd()));
-        if(dto.getMovieId() != null){
-            var movie = movieService.findById(dto.getMovieId());
-            sessions.setMovie(movie);
-        }
-    }
 }

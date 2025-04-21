@@ -50,6 +50,13 @@ public class Sessions implements Serializable {
         return room;
     }
 
+    public Sessions(Long id, String name, LocalDateTime dateStart, LocalDateTime dateEnd, Movies movie) {
+        this.id = id;
+        this.name = name;
+        this.dateStart = dateStart;
+        this.dateEnd = dateEnd;
+        this.movie = movie;
+    }
 
     public static LocalDateTime convertStringToLocalDateTime(String data){
         if (data == null || data.isEmpty()) {
