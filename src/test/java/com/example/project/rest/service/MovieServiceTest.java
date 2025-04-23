@@ -7,6 +7,7 @@ import com.example.project.domain.entities.Users;
 import com.example.project.domain.repositories.MovieRepository;
 import com.example.project.rest.dto.AddCategoryToMovieRequestDto;
 import com.example.project.rest.dto.MovieRequestDto;
+import com.example.project.rest.dto.MovieResponseDto;
 import com.example.project.rest.services.CategoryService;
 import com.example.project.rest.services.MovieService;
 import com.example.project.rest.services.S3Service;
@@ -14,8 +15,6 @@ import com.example.project.rest.services.UsersService;
 import com.example.project.rest.services.exceptions.CustomException;
 import com.example.project.rest.services.exceptions.ObjectNotFoundExceptions;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.constraints.NotBlank;
-import org.apache.http.impl.cookie.DateParseException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,7 +28,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -64,6 +62,7 @@ public class MovieServiceTest {
     private MovieRequestDto movieRequestDto;
     private AddCategoryToMovieRequestDto categoryRequest1;
     private AddCategoryToMovieRequestDto categoryRequest2;
+    private MovieResponseDto movieResponseDto;
 
     public static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
@@ -79,6 +78,8 @@ public class MovieServiceTest {
         movies.setReleaseData(LocalDate.parse("28/09/2001", formatter));
         movies.setClassification("18");
         movies.setBackgroundCover("https://www.google.com/url?sa=i&url=https%3A%2F%2Folhardigital.com.br%2F2023%2F06%2F08%2Fcinema-e-streaming%2Fvelozes-e-furiosos-saiba-a-ordem-certa-dos-filmes%2F&psig=AOvVaw2AkzjlhZT-EGIHiGB__qwZ&ust=1745276360614000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCJipsJ_b54wDFQAAAAAdAAAAABAE");
+
+        movieResponseDto = MovieResponseDto.of(movies);
 
         categorie1 = new Categories(1L,"artes marciais");
         categorie2 = new Categories(2L,"drama");
@@ -265,7 +266,6 @@ public class MovieServiceTest {
 
     @Test
     void testFindByIdWithInvalidId() {
-
         var id = 5L;
         given(repository.findById(anyLong())).willReturn(Optional.empty());
 
@@ -277,5 +277,194 @@ public class MovieServiceTest {
 
         verify(repository).findById(anyLong());
         verifyNoMoreInteractions(repository);
+    }
+
+    @Test
+    void testFindAllByCategory() {
+        given(categoryService.findById(anyLong())).willReturn(categorie1);
+        given(repository.findByCategories(any(Categories.class))).willReturn(Collections.singletonList(movies));
+
+        var list = movieService.findAllByCategory(categorie1.getId());
+
+        assertThat(list.size()).isEqualTo(1);
+        assertThat(list).extracting("name","description","rating","releaseData","imageUrl","classification","backgroundCover")
+                .contains(
+                        tuple(
+                            movieResponseDto.getName(),
+                            movieResponseDto.getDescription(),
+                            movieResponseDto.getRating(),
+                            movieResponseDto.getReleaseData(),
+                            movieResponseDto.getImageUrl(),
+                            movieResponseDto.getClassification(),
+                            movieResponseDto.getBackgroundCover())
+                );
+        assertThat(list.getFirst().getCategories()).extracting("name")
+                .containsExactly(
+                        categorie1.getName()
+                );
+
+        verify(categoryService).findById(anyLong());
+        verify(repository).findByCategories(any(Categories.class));
+        verifyNoMoreInteractions(categoryService);
+        verifyNoMoreInteractions(repository);
+    }
+
+
+    @Test
+    void testFindAllByCategoryIfReturnEmptyList() {
+        given(categoryService.findById(anyLong())).willReturn(categorie2);
+        given(repository.findByCategories(any(Categories.class))).willReturn(Collections.emptyList());
+
+        assertThatExceptionOfType(ObjectNotFoundExceptions.class)
+                .isThrownBy(() -> movieService.findAllByCategory(categorie2.getId()))
+                .withMessage(
+                        messageSource.getMessage("movie.service.error.emptyList", null, LocaleContextHolder.getLocale())
+                );
+
+        verify(categoryService).findById(anyLong());
+        verify(repository).findByCategories(any(Categories.class));
+        verifyNoMoreInteractions(categoryService);
+        verifyNoMoreInteractions(repository);
+    }
+
+    @Test
+    void testGetRandomMovies() {
+        given(repository.findRandomMovieIds(anyInt())).willReturn(Collections.singletonList(movies.getId()));
+        given(repository.findMoviesByIds(anyList())).willReturn(Collections.singletonList(movies));
+
+        var list = movieService.getRandomMovies();
+
+        assertThat(list.size()).isEqualTo(1);
+        assertThat(list).extracting("name","description","rating","releaseData","imageUrl","classification","backgroundCover")
+                .contains(
+                        tuple(
+                                movieResponseDto.getName(),
+                                movieResponseDto.getDescription(),
+                                movieResponseDto.getRating(),
+                                movieResponseDto.getReleaseData(),
+                                movieResponseDto.getImageUrl(),
+                                movieResponseDto.getClassification(),
+                                movieResponseDto.getBackgroundCover())
+                );
+        assertThat(list.getFirst().getCategories()).extracting("name")
+                .containsExactly(
+                        categorie1.getName()
+                );
+
+        verify(repository).findRandomMovieIds(anyInt());
+        verify(repository).findMoviesByIds(anyList());
+        verifyNoMoreInteractions(repository);
+    }
+
+    @Test
+    void testGetRandomMoviesIfReturnEmptyList() {
+        given(repository.findRandomMovieIds(anyInt())).willReturn(Collections.singletonList(movies.getId()));
+        given(repository.findMoviesByIds(anyList())).willReturn(Collections.emptyList());
+
+        assertThatExceptionOfType(ObjectNotFoundExceptions.class)
+                .isThrownBy(() -> movieService.getRandomMovies())
+                .withMessage(
+                        messageSource.getMessage("movie.service.error.emptyList", null, LocaleContextHolder.getLocale())
+                );
+
+        verify(repository).findRandomMovieIds(anyInt());
+        verify(repository).findMoviesByIds(anyList());
+        verifyNoMoreInteractions(repository);
+    }
+
+    @Test
+    void testUpdateMovieData() {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        MultipartFile imgFile = mock(MultipartFile.class);
+        MultipartFile backgroundCover = mock(MultipartFile.class);
+
+        given(repository.findById(anyLong())).willReturn(Optional.of(movies));
+
+        movieService.updateMovieData(imgFile,backgroundCover,movies.getId(),movieRequestDto,request);
+
+        verify(usersService).checkIfIsADM(any(HttpServletRequest.class));
+        verify(s3Service, times(2)).uploadFileImg(any(MultipartFile.class));
+        verify(repository).findById(anyLong());
+        verify(repository).save(any(Movies.class));
+        verifyNoMoreInteractions(usersService);
+        verifyNoMoreInteractions(s3Service);
+        verifyNoMoreInteractions(repository);
+
+    }
+
+    @Test
+    void testUpdateMovieDateTimeParseException() {
+        movieRequestDto.setReleaseData("ASdasdsaasdadsasd");
+
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        MultipartFile imgFile = mock(MultipartFile.class);
+        MultipartFile backgroundCover = mock(MultipartFile.class);
+
+
+        given(repository.findById(anyLong())).willReturn(Optional.of(movies));
+
+        assertThatExceptionOfType(CustomException.class)
+               .isThrownBy(() -> movieService.updateMovieData(imgFile,backgroundCover,movies.getId(),movieRequestDto,request))
+                       .withMessage(
+                               messageSource.getMessage("format.data.error", null, LocaleContextHolder.getLocale())
+                       );
+
+        verify(usersService).checkIfIsADM(any(HttpServletRequest.class));
+        verify(s3Service, times(2)).uploadFileImg(any(MultipartFile.class));
+        verify(repository).findById(anyLong());
+        verifyNoMoreInteractions(usersService);
+        verifyNoMoreInteractions(s3Service);
+        verifyNoMoreInteractions(repository);
+    }
+
+    @Test
+    void testUpdateMovieDataWithNullImgMultpartFile() {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        MultipartFile imgFile = null;
+        MultipartFile backgroundCover = mock(MultipartFile.class);
+
+        given(repository.findById(anyLong())).willReturn(Optional.of(movies));
+
+        movieService.updateMovieData(imgFile,backgroundCover,movies.getId(),movieRequestDto,request);
+
+        verify(s3Service,times(1)).uploadFileImg(any(MultipartFile.class));
+        verifyNoMoreInteractions(s3Service);
+        verify(repository).findById(anyLong());
+        verify(repository).save(any(Movies.class));
+        verifyNoMoreInteractions(repository);
+    }
+
+    @Test
+    void testUpdateMovieDataWithNullBackgroundCoverMultpartFile() {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        MultipartFile imgFile = mock(MultipartFile.class);;
+        MultipartFile backgroundCover = null;
+
+        given(repository.findById(anyLong())).willReturn(Optional.of(movies));
+
+        movieService.updateMovieData(imgFile,backgroundCover,movies.getId(),movieRequestDto,request);
+
+        verify(s3Service,times(1)).uploadFileImg(any(MultipartFile.class));
+        verifyNoMoreInteractions(s3Service);
+        verify(repository).findById(anyLong());
+        verify(repository).save(any(Movies.class));
+        verifyNoMoreInteractions(repository);
+    }
+
+    @Test
+    void testUpdateMovieDataWithNullBackgroundCoverMultpartFileAndNullImgMultpartFile() {
+        HttpServletRequest request = mock(HttpServletRequest.class);
+        MultipartFile imgFile = null;
+        MultipartFile backgroundCover = null;
+
+        given(repository.findById(anyLong())).willReturn(Optional.of(movies));
+
+        movieService.updateMovieData(imgFile,backgroundCover,movies.getId(),movieRequestDto,request);
+
+        verifyNoInteractions(s3Service);
+        verify(repository).findById(anyLong());
+        verify(repository).save(any(Movies.class));
+        verifyNoMoreInteractions(repository);
+
     }
 }

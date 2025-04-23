@@ -55,7 +55,6 @@ public class RecoverCodeService {
 
     public String validateCode(String codeValue, String email){
 
-
         var user = usersRepository.findByEmail(email).orElseThrow(
                 () -> new CustomException(
                         messageSource.getMessage("recover.code.error.invalid", null, LocaleContextHolder.getLocale())
