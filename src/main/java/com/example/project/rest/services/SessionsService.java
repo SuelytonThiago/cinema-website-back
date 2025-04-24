@@ -32,7 +32,6 @@ public class SessionsService {
     }
 
     public Sessions findById(Long id) {
-
         return sessionsRepository.findById(id).orElseThrow(
                 () -> new ObjectNotFoundExceptions(
                         messageSource.getMessage("session.service.error.notFound", null, LocaleContextHolder.getLocale())

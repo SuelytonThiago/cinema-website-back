@@ -55,8 +55,6 @@ public class ReviewServiceTest {
 
     public static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-
-
     @BeforeEach
     void setUp() {
 
@@ -85,6 +83,7 @@ public class ReviewServiceTest {
         review.setMovie(movies);
         review.setComment("asdasdasdasdasd");
         review.setId(1L);
+
 
         dto = new ReviewRequestDto();
         dto.setComment(review.getComment());
@@ -233,6 +232,20 @@ public class ReviewServiceTest {
         verify(reviewsRepository).findByUserAndMovie(any(Users.class),any(Movies.class));
         verifyNoMoreInteractions(usersService);
         verifyNoMoreInteractions(movieService);
+        verifyNoMoreInteractions(reviewsRepository);
+    }
+
+
+    @Test
+    void testUpdateReview() {
+        given(reviewsRepository.findById(anyLong())).willReturn(Optional.of(review));
+        given(reviewsRepository.save(any(Reviews.class))).willReturn(review);
+
+        var response = reviewService.updateReview(dto, review.getId());
+
+        assertThat(response).isEqualTo(responseDto);
+        verify(reviewsRepository).findById(anyLong());
+        verify(reviewsRepository).save(any(Reviews.class));
         verifyNoMoreInteractions(reviewsRepository);
     }
 
