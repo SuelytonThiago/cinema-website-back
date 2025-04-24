@@ -6,10 +6,13 @@ import com.example.project.domain.entities.Sessions;
 import com.example.project.domain.entities.Users;
 import com.example.project.domain.repositories.SessionsRepository;
 import com.example.project.rest.dto.MovieRequestDto;
+import com.example.project.rest.dto.SessionRequestDto;
 import com.example.project.rest.dto.SessionResponseDto;
 import com.example.project.rest.services.MovieService;
 import com.example.project.rest.services.SessionsService;
 import com.example.project.rest.services.UsersService;
+import com.example.project.rest.services.exceptions.ObjectNotFoundExceptions;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,12 +20,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
@@ -46,9 +51,10 @@ public class SessionServiceTest {
     private Movies movies;
     private Roles admRole, userRole;
     private SessionResponseDto sessionResponseDto;
+    private SessionRequestDto sessionRequestDto;
 
     public static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-
+    DateTimeFormatter formatterTime = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm:ss a");
 
     @BeforeEach
     void setUp() {
@@ -87,12 +93,17 @@ public class SessionServiceTest {
         session = new Sessions();
         session.setMovie(movies);
         session.setId(1L);
-        session.setDateStart(LocalDateTime.now());
+        session.setDateStart(LocalDateTime.now().plusMinutes(10));
         session.setDateEnd(LocalDateTime.now().plusMinutes(30));
         session.setName("session 1");
 
         sessionResponseDto = SessionResponseDto.of(session);
+        sessionRequestDto = new SessionRequestDto();
 
+        sessionRequestDto.setName(session.getName());
+        sessionRequestDto.setDateStart(session.getDateStart().format(formatterTime));
+        sessionRequestDto.setDateEnd(session.getDateEnd().format(formatterTime));
+        sessionRequestDto.setMovieId(session.getMovie().getId());
     }
 
 
@@ -105,7 +116,27 @@ public class SessionServiceTest {
 
     @Test
     void testFindById() {
+        given(sessionsRepository.findById(anyLong())).willReturn(Optional.of(session));
 
+        var response = sessionsService.findById(session.getId());
+
+        assertThat(response).isEqualTo(session);
+        verify(sessionsRepository).findById(anyLong());
+        verifyNoMoreInteractions(sessionsRepository);
+    }
+
+    @Test
+    void testFindByIdWithObjectNotFoundError() {
+        var id = 5L;
+        given(sessionsRepository.findById(anyLong())).willReturn(Optional.empty());
+
+        assertThatExceptionOfType(ObjectNotFoundExceptions.class)
+                .isThrownBy(() -> sessionsService.findById(id))
+                .withMessage(
+                        messageSource.getMessage("session.service.error.emptyList", null, LocaleContextHolder.getLocale())
+                );
+        verify(sessionsRepository).findById(anyLong());
+        verifyNoMoreInteractions(sessionsRepository);
     }
 
     @Test
@@ -146,7 +177,35 @@ public class SessionServiceTest {
 
     @Test
     void testFindSessionsByMovieReturnEmptyList() {
+        given(movieService.findById(anyLong())).willReturn(movies);
+        given(sessionsRepository.findAllWithDateAfterAndMovie(any(LocalDateTime.class), any(Movies.class))).willReturn(Collections.emptyList());
 
+        assertThatExceptionOfType(ObjectNotFoundExceptions.class)
+                .isThrownBy(() -> sessionsService.findSessionsByMovie(movies.getId()));
+
+        verify(movieService).findById(anyLong());
+        verify(sessionsRepository).findAllWithDateAfterAndMovie(any(LocalDateTime.class), any(Movies.class));
+        verifyNoMoreInteractions(sessionsRepository);
+        verifyNoMoreInteractions(movieService);
+    }
+
+    @Test
+    void testCreateSession() {
+        var request = mock(HttpServletRequest.class);
+        doNothing().when(usersService).checkIfIsADM(request);
+        given(movieService.findById(anyLong())).willReturn(movies);
+        given(sessionsRepository.save(any(Sessions.class))).willReturn(session);
+
+        var response = sessionsService.createSession(sessionRequestDto,request);
+
+        assertThat(response).isEqualTo(sessionResponseDto);
+
+        verify(usersService).checkIfIsADM(any(HttpServletRequest.class));
+        verify(movieService).findById(anyLong());
+        verify(sessionsRepository).save(any(Sessions.class));
+        verifyNoMoreInteractions(movieService);
+        verifyNoMoreInteractions(sessionsRepository);
+        verifyNoMoreInteractions(usersService);
     }
 
 }

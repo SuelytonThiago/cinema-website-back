@@ -23,7 +23,8 @@ import java.util.Objects;
 @Table(name = "sessions")
 public class Sessions implements Serializable {
 
-    public static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss a");
+    public static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm:ss a");
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
